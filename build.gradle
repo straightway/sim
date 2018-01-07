@@ -1,0 +1,46 @@
+buildscript {
+    ext.kotlin_version = '1.2.10'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+group 'straightway'
+version '0.1-SNAPSHOT'
+
+apply plugin: 'kotlin'
+apply plugin: 'maven'
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://straightway.github.io/repo" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "straightway:error:0.1+"
+    compile "straightway:dsl:0.1+"
+    compile "straightway:units:0.1+"
+    testCompile "straightway:testing:0.1+"
+    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://" + file("../repo"))
+        }
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
