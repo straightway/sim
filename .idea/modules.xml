@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim.iml" filepath="$PROJECT_DIR$/.idea/modules/sim.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim.net/sim.net.iml" filepath="$PROJECT_DIR$/.idea/modules/sim.net/sim.net.iml" group="sim.net" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim.net/sim.net_main.iml" filepath="$PROJECT_DIR$/.idea/modules/sim.net/sim.net_main.iml" group="sim.net" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim.net/sim.net_test.iml" filepath="$PROJECT_DIR$/.idea/modules/sim.net/sim.net_test.iml" group="sim.net" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim_main.iml" filepath="$PROJECT_DIR$/.idea/modules/sim_main.iml" group="sim" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sim_test.iml" filepath="$PROJECT_DIR$/.idea/modules/sim_test.iml" group="sim" />
     </modules>
