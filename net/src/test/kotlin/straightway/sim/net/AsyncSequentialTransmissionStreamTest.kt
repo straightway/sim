@@ -23,8 +23,27 @@ import straightway.dsl.minus
 import straightway.sim.TimeProvider
 import straightway.sim.core.Simulator
 import straightway.testing.TestBase
-import straightway.testing.flow.*
-import straightway.units.*
+import straightway.testing.flow._is
+import straightway.testing.flow._throw
+import straightway.testing.flow._to
+import straightway.testing.flow.does
+import straightway.testing.flow.equal
+import straightway.testing.flow.exception
+import straightway.testing.flow.expect
+import straightway.testing.flow.minus
+import straightway.testing.flow.not
+import straightway.units.AmountOfData
+import straightway.units.Bandwidth
+import straightway.units.Time
+import straightway.units.UnitNumber
+import straightway.units.UnitValue
+import straightway.units.bit
+import straightway.units.byte
+import straightway.units.div
+import straightway.units.get
+import straightway.units.plus
+import straightway.units.second
+import straightway.units.unitValue
 import java.time.LocalDateTime
 
 class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissionStreamTest.Environment>() {
