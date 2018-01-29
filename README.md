@@ -6,7 +6,7 @@ This kotlin library provides basic means for running simple event driven simulat
 
 This software is in pre-release state. Every aspect of it may change without announcement or
 notification or downward compatibility. As soon as version 1.0 is reached, all subsequent
-changes for subversions will be downward compatible. Breaking changes will then only occur
+changes for sub versions will be downward compatible. Breaking changes will then only occur
 with a new major version with according deprecation marking.
 
 ## Include in gradle builds

@@ -13,20 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package straightway.sim.net
+package straightway.sim.core
 
-import java.time.LocalDateTime
+import org.junit.jupiter.api.Test
+import straightway.sim.Controller
+import straightway.testing.flow.Empty
+import straightway.testing.flow.expect
+import straightway.testing.flow.is_
 
-class TransmissionStreamMock(private val id: String, private val log: LogList) : TransmissionStream {
-    override fun requestTransmission(request: TransmitRequest): TransmitOffer {
-        return TransmitOffer(this, receiveTime, request)
+internal class SimulatorTestReset : SimulatorTest() {
+
+    @Test fun withoutEvent_hasNoEffect() = (sut as Controller).reset()
+
+    @Test fun clearEventQueue() {
+        sut.schedule(defaultEventDuration) {}
+        sut.reset()
+        expect(sut.eventQueue is_ Empty)
     }
-
-    override fun accept(offer: TransmitOffer) {
-        log.add("$this: Transmit ${offer.request.message} from ${offer.request.sender} to ${offer.request.receiver}")
-    }
-
-    var receiveTime = LocalDateTime.of(0, 1, 1, 0, 0)!!
-
-    override fun toString() = id
 }

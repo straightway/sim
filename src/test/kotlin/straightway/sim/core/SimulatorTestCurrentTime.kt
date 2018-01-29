@@ -13,20 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package straightway.sim.net
+package straightway.sim.core
 
-import java.time.LocalDateTime
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
-class TransmissionStreamMock(private val id: String, private val log: LogList) : TransmissionStream {
-    override fun requestTransmission(request: TransmitRequest): TransmitOffer {
-        return TransmitOffer(this, receiveTime, request)
-    }
-
-    override fun accept(offer: TransmitOffer) {
-        log.add("$this: Transmit ${offer.request.message} from ${offer.request.sender} to ${offer.request.receiver}")
-    }
-
-    var receiveTime = LocalDateTime.of(0, 1, 1, 0, 0)!!
-
-    override fun toString() = id
+internal class SimulatorTestCurrentTime : SimulatorTest() {
+    @Test fun isInitiallyZero() = assertEquals(initialTime, sut.currentTime)
 }
