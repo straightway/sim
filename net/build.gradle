@@ -1,41 +1,139 @@
-buildscript {
-    ext.kotlin_version = '1.2.20'
+/*
+ * Copyright 2016 github.com/straightway
+ *
+ *  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
+buildscript {
+    ext.kotlin_version = '1.2.21'
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
     }
 }
 
 group 'straightway'
-version '0.1-SNAPSHOT'
+apply from: 'version.gradle'
 
 apply plugin: 'kotlin'
 apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+tasks.idea.dependsOn(cleanIdea)
+
+if (idea.project != null) {
+    idea.project.ipr {
+        withXml { provider ->
+            def inspectionManager = provider.asNode().appendNode('component', [name: 'InspectionProjectProfileManager'])
+            def profile = inspectionManager.appendNode('profile', [version: '1.0'])
+            profile.appendNode('option', [name: 'myName', value: 'Project Default'])
+            def classInspection = profile.appendNode('inspection_tool', [class             : 'ClassName',
+                                                                         enabled           : 'true',
+                                                                         level             : 'WEAK WARNING',
+                                                                         enabled_by_default: 'true'])
+            classInspection.appendNode('option', [name: 'namePattern', value: '[A-Z][_A-Za-z\\d]*'])
+            def funInspection = profile.appendNode('inspection_tool', [class             : 'FunctionName',
+                                                                       enabled           : 'true',
+                                                                       level             : 'WEAK WARNING',
+                                                                       enabled_by_default: 'true'])
+            funInspection.appendNode('option', [name: 'namePattern', value: '[a-z][_A-Za-z\\d]*'])
+
+            def copyrightManager = provider.asNode().appendNode('component', [name: 'CopyrightManager', default: ''])
+            def copyright = copyrightManager.appendNode('copyright')
+            copyright.appendNode('option', [name: 'myName', value: 'Apache License'])
+            copyright.appendNode('option', [name: 'notice', value: 'Copyright 2016 github.com/straightway\n\n Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);\n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\n\n http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing, software\n distributed under the License is distributed on an &quot;AS IS&quot; BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.'])
+        }
+    }
+}
 
 repositories {
     mavenCentral()
     maven { url "https://straightway.github.io/repo" }
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile project(":sim")
-    compile findProject(":units") ?: "straightway:units:0.1+"
-    testCompile findProject(":testing") ?: "straightway:testing:0.1+"
-    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
+static def junit5(part) { return "org.junit.jupiter:junit-jupiter-${part}:5.0.1" }
+def kotlin(part) { return "org.jetbrains.kotlin:kotlin-${part}:$kotlin_version" }
+static def mockito() { return "org.mockito:mockito-core:1.+" }
+static def mockitoKotlin() { return 'com.nhaarman:mockito-kotlin:1.5.0' }
+def straightway(lib) {
+    return findProject(":${lib}") ?: "straightway:${lib.replaceAll(':', '-')}:${version}"
+}
+def straightway(lib, version) {
+    return findProject(":${lib}") ?: "straightway:${lib.replaceAll(':', '-')}:${version}"
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "file://" + file("../../repo"))
+dependencies {
+    compile kotlin("stdlib-jdk8")
+    testCompile junit5("api")
+    testRuntime(
+            junit5("engine"),
+            'org.junit.vintage:junit-vintage-engine:4.12.1',
+            'org.junit.platform:junit-platform-launcher:1.0.1',
+            'org.junit.platform:junit-platform-runner:1.0.1'
+    )
+}
+
+def findParentPath(String dirToFind) {
+    def pathToCheck = project.projectDir
+    while (pathToCheck != '/') {
+        def buildTemplatesDirToCheck = "${pathToCheck}/${dirToFind}"
+        if (new File(buildTemplatesDirToCheck).isDirectory()) {
+            return buildTemplatesDirToCheck
+        }
+        pathToCheck = file(pathToCheck).parent
+    }
+    return null
+}
+
+task refreshBuild {
+    doLast {
+        def buildTemplatesDir = findParentPath("buildTemplates")
+        new File(buildTemplatesDir).eachFile {
+            def fileToRefresh = new File("${project.projectDir}/${it.name}")
+            if (fileToRefresh.exists()) {
+                def srcFile = "${buildTemplatesDir}/${it.name}"
+                copy {
+                    from srcFile
+                    into project.projectDir
+                }
+            }
         }
     }
 }
 
+apply from: 'projectSpecific.gradle'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://" + file(findParentPath("repo")))
+        }
+    }
+}
+
+junitPlatform {
+    filters {
+        includeClassNamePattern '.*Test.*'
+    }
+}
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }

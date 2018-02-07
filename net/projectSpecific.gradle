@@ -14,8 +14,9 @@
  *  limitations under the License.
  */
 
-if (rootProject.name != "straightway") {
-    rootProject.projectDir = new File(rootProject.projectDir.parent)
+dependencies {
+    compile project(":sim")
+    compile straightway('units')
+    testCompile straightway('testing')
+    testCompile mockitoKotlin()
 }
-
-apply from: "projectDependencies.gradle"

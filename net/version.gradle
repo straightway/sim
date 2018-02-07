@@ -14,8 +14,4 @@
  *  limitations under the License.
  */
 
-if (rootProject.name != "straightway") {
-    rootProject.projectDir = new File(rootProject.projectDir.parent)
-}
-
-apply from: "projectDependencies.gradle"
+version '0.3-SNAPSHOT'

@@ -13,9 +13,5 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-if (rootProject.name != "straightway") {
-    rootProject.projectDir = new File(rootProject.projectDir.parent)
-}
-
-apply from: "projectDependencies.gradle"
+include 'sim'
+include 'sim:net'

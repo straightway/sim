@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2016 github.com/straightway
  *
@@ -14,8 +15,7 @@
  *  limitations under the License.
  */
 
-if (rootProject.name != "straightway") {
-    rootProject.projectDir = new File(rootProject.projectDir.parent)
+dependencies {
+    compile straightway('units')
+    testCompile straightway('testing')
 }
-
-apply from: "projectDependencies.gradle"
