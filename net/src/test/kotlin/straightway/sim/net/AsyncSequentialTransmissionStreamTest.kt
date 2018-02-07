@@ -19,7 +19,7 @@ import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.mock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import straightway.dsl.minus
+import straightway.expr.minus
 import straightway.sim.TimeProvider
 import straightway.sim.core.Simulator
 import straightway.testing.TestBase

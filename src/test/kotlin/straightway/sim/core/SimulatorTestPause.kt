@@ -17,7 +17,7 @@ package straightway.sim.core
 
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
-import straightway.dsl.minus
+import straightway.expr.minus
 import straightway.sim.Controller
 import straightway.testing.flow.Not
 import straightway.testing.flow.Size
