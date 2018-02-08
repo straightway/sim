@@ -51,7 +51,7 @@ class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissi
     class Environment {
 
         fun channel(bandwidth: UnitValue<Int, Bandwidth>) =
-            channels.getOrPut(bandwidth) { AsyncSequentialTransmissionStream(bandwidth, timeProvider) }
+                channels.getOrPut(bandwidth) { AsyncSequentialTransmissionStream(bandwidth, timeProvider) }
 
         var currentTime: LocalDateTime = LocalDateTime.of(0, 1, 1, 0, 0)
 
@@ -134,8 +134,7 @@ class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissi
     fun foreignOfferIstScheduledAtEndTime() = sut.run {
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second])))
 
         var time = transmit(message(899[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ equal to_ 8.99[second])
@@ -147,12 +146,10 @@ class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissi
     fun secondForeignOfferWithSameEndTimeIstScheduledBeforeFirstOne() = sut.run {
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second])))
         transmit(message(200[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(7[second], 3[second])
-        ))
+                transmissionBlock(7[second], 3[second])))
 
         var time = transmit(message(699[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ equal to_ 6.99[second])
@@ -164,58 +161,49 @@ class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissi
     fun foreignOfferEndsInTheMiddleOfExistingTransmissionAndIsScheduledBefore() = sut.run {
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second])))
         transmit(message(190[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(7.1[second], 2.9[second])
-        ))
+                transmissionBlock(7.1[second], 2.9[second])))
     }
 
     @Test
     fun foreignOffersNotOverlappingAddedInBetween() = sut.run {
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second])))
 
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second]),
-            transmissionBlock(19[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second]),
+                transmissionBlock(19[second], 1[second])))
 
         transmit(message(300[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second]),
-            transmissionBlock(12[second], 3[second]),
-            transmissionBlock(19[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second]),
+                transmissionBlock(12[second], 3[second]),
+                transmissionBlock(19[second], 1[second])))
     }
 
     @Test
     fun oldTransmissionsAreCleanedUp_onTransmissionRequest() = sut.run {
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(9[second], 1[second])
-        ))
+                transmissionBlock(9[second], 1[second])))
         expect(channel(10[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(0[second], 10[second])
-        ))
+                transmissionBlock(0[second], 10[second])))
 
         currentTime += 100[second]
 
         transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(channel(100[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(109[second], 1[second])
-        ))
+                transmissionBlock(109[second], 1[second])))
         expect(channel(10[bit / second]).scheduledTransmissions is_ equal to_ listOf(
-            transmissionBlock(100[second], 10[second])
-        ))
+                transmissionBlock(100[second], 10[second])))
     }
 
     private fun transmissionBlock(startTime: UnitNumber<Time>, duration: UnitNumber<Time>) =
-        AsyncSequentialTransmissionStream.TransmissionRecord(LocalDateTime.of(0, 1, 1, 0, 0) + startTime, duration)
+            AsyncSequentialTransmissionStream.TransmissionRecord(LocalDateTime.of(0, 1, 1, 0, 0) + startTime, duration)
 
     private companion object {
         fun message(size: UnitValue<Int, AmountOfData> = 100[byte]) = createMessage(size)

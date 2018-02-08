@@ -1,18 +1,18 @@
-/****************************************************************************
-Copyright 2016 github.com/straightway
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
- ****************************************************************************/
+/*
+ * Copyright 2016 github.com/straightway
+ *
+ *  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package straightway.sim.net
 
 import straightway.sim.TimeProvider
@@ -40,14 +40,13 @@ class AsyncSequentialTransmissionStream(
     data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNumber<Time>) {
         val endTime: LocalDateTime by lazy { startTime + duration }
         override fun equals(other: Any?) =
-            if (other is TransmissionRecord)
-                abs(startTime - other.startTime) < 10[nano(second)] &&
-                    abs(duration - other.duration) < 10[nano(second)]
-            else
-                super.equals(other)
+                if (other is TransmissionRecord)
+                    abs(startTime - other.startTime) < 10[nano(second)] &&
+                            abs(duration - other.duration) < 10[nano(second)]
+                else super.equals(other)
 
         override fun hashCode() =
-            (startTime.nano / 10).hashCode() xor startTime.second.hashCode() xor duration.hashCode()
+                (startTime.nano / 10).hashCode() xor startTime.second.hashCode() xor duration.hashCode()
     }
 
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
@@ -56,7 +55,7 @@ class AsyncSequentialTransmissionStream(
     }
 
     override fun accept(offer: TransmitOffer) =
-        if (offer.isMyOwn) acceptOwn(offer) else acceptForeign(offer)
+            if (offer.isMyOwn) acceptOwn(offer) else acceptForeign(offer)
 
     val scheduledTransmissions get() = _scheduledTransmissions
 
@@ -79,10 +78,10 @@ class AsyncSequentialTransmissionStream(
     private fun TransmitRequest.createOffer(): TransmitOffer {
         val newSchedule = scheduledTransmissionsWithNewRequest
         return TransmitOffer(
-            issuer = this@AsyncSequentialTransmissionStream,
-            finishTime = newSchedule.first().endTime,
-            request = this,
-            memento = newSchedule)
+                issuer = this@AsyncSequentialTransmissionStream,
+                finishTime = newSchedule.first().endTime,
+                request = this,
+                memento = newSchedule)
     }
 
     private val TransmitRequest.scheduledTransmissionsWithNewRequest
@@ -96,8 +95,7 @@ class AsyncSequentialTransmissionStream(
             get() =
                 if (canBeEntirelyTransmittedFirst)
                     listOf(newCompleteTransmission) + scheduledTransmissions
-                else
-                    listOf(mergedFirstTransmission) + restSchedule.drop(1)
+                else listOf(mergedFirstTransmission) + restSchedule.drop(1)
 
         private val canBeEntirelyTransmittedFirst
             get() =
@@ -132,18 +130,18 @@ class AsyncSequentialTransmissionStream(
     private val TransmitOffer.isMyOwn get() = issuer === this@AsyncSequentialTransmissionStream
 
     private fun List<TransmissionRecord>.splitAt(time: LocalDateTime): Pair<List<TransmissionRecord>, List<TransmissionRecord>> =
-        when {
-            isEmpty() -> Pair(listOf(), listOf())
-            time.isBefore(first().startTime) -> Pair(listOf(), this)
-            last().endTime.isBefore(time) -> Pair(this, listOf())
-            time.isBefore(first().endTime) -> Pair(
-                listOf(TransmissionRecord(first().startTime, time - first().startTime)),
-                listOf(TransmissionRecord(time, first().endTime - time)) + drop(1))
-            else -> {
-                val restSplit = drop(1).splitAt(time)
-                Pair(listOf(first()) + restSplit.first, restSplit.second)
+            when {
+                isEmpty() -> Pair(listOf(), listOf())
+                time.isBefore(first().startTime) -> Pair(listOf(), this)
+                last().endTime.isBefore(time) -> Pair(this, listOf())
+                time.isBefore(first().endTime) -> Pair(
+                        listOf(TransmissionRecord(first().startTime, time - first().startTime)),
+                        listOf(TransmissionRecord(time, first().endTime - time)) + drop(1))
+                else -> {
+                    val restSplit = drop(1).splitAt(time)
+                    Pair(listOf(first()) + restSplit.first, restSplit.second)
+                }
             }
-        }
 
     private infix fun List<TransmissionRecord>.mergeWith(tail: List<TransmissionRecord>) = when {
         isEmpty() -> tail
