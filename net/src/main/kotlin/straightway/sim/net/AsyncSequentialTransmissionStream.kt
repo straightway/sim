@@ -92,22 +92,17 @@ class AsyncSequentialTransmissionStream(
                                         private val duration: UnitNumber<Time>) {
 
         val transmissions: List<TransmissionRecord>
-            get() =
-                if (canBeEntirelyTransmittedFirst)
-                    listOf(newCompleteTransmission) + scheduledTransmissions
-                else listOf(mergedFirstTransmission) + restSchedule.drop(1)
+            get() = if (canBeEntirelyTransmittedFirst) listOf(newCompleteTransmission) + scheduledTransmissions
+                    else listOf(mergedFirstTransmission) + restSchedule.drop(1)
 
         private val canBeEntirelyTransmittedFirst
-            get() =
-                abs(duration) < abs(firstGapSize) || scheduledTransmissions.isEmpty()
+            get() = abs(duration) < abs(firstGapSize) || scheduledTransmissions.isEmpty()
 
         private val newCompleteTransmission
-            get() =
-                TransmissionRecord(startTime, duration)
+            get() = TransmissionRecord(startTime, duration)
 
         private val mergedFirstTransmission
-            get() =
-                TransmissionRecord(startTime, firstGapSize + firstTransmission.duration + restSchedule.first().duration)
+            get() = TransmissionRecord(startTime, firstGapSize + firstTransmission.duration + restSchedule.first().duration)
 
         private val restSchedule by lazy {
             TransmissionScheduler(scheduledTransmissions.drop(1), firstTransmission.endTime, duration - firstGapSize).transmissions
@@ -151,8 +146,7 @@ class AsyncSequentialTransmissionStream(
     }
 
     private val List<TransmissionRecord>.reverse: List<TransmissionRecord>
-        get() =
-            if (isEmpty()) this else drop(1).reverse + first().reverse
+        get() = if (isEmpty()) this else drop(1).reverse + first().reverse
 
     private val TransmissionRecord.reverse get() = TransmissionRecord(startTime + duration, -duration)
 
