@@ -41,12 +41,18 @@ class AsyncSequentialTransmissionStream(
         val endTime: LocalDateTime by lazy { startTime + duration }
         override fun equals(other: Any?) =
                 if (other is TransmissionRecord)
-                    abs(startTime - other.startTime) < 10[nano(second)] &&
-                            abs(duration - other.duration) < 10[nano(second)]
+                    abs(startTime - other.startTime) < EQUALITY_THRESHOLD &&
+                            abs(duration - other.duration) < EQUALITY_THRESHOLD
                 else super.equals(other)
 
-        override fun hashCode() =
-                (startTime.nano / 10).hashCode() xor startTime.second.hashCode() xor duration.hashCode()
+        override fun hashCode() = (startTime.nano / EQUALITY_THRESHOLD_NS).hashCode() xor
+                startTime.second.hashCode() xor
+                duration.hashCode()
+
+        companion object {
+            private val EQUALITY_THRESHOLD_NS = 10
+            private val EQUALITY_THRESHOLD = EQUALITY_THRESHOLD_NS[nano(second)]
+        }
     }
 
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
@@ -102,10 +108,15 @@ class AsyncSequentialTransmissionStream(
             get() = TransmissionRecord(startTime, duration)
 
         private val mergedFirstTransmission
-            get() = TransmissionRecord(startTime, firstGapSize + firstTransmission.duration + restSchedule.first().duration)
+            get() = TransmissionRecord(
+                    startTime,
+                    firstGapSize + firstTransmission.duration + restSchedule.first().duration)
 
         private val restSchedule by lazy {
-            TransmissionScheduler(scheduledTransmissions.drop(1), firstTransmission.endTime, duration - firstGapSize).transmissions
+            TransmissionScheduler(
+                    scheduledTransmissions.drop(1),
+                    firstTransmission.endTime,
+                    duration - firstGapSize).transmissions
         }
 
         private val firstGapSize by lazy {
@@ -124,7 +135,8 @@ class AsyncSequentialTransmissionStream(
         get() = memento as List<TransmissionRecord>
     private val TransmitOffer.isMyOwn get() = issuer === this@AsyncSequentialTransmissionStream
 
-    private fun List<TransmissionRecord>.splitAt(time: LocalDateTime): Pair<List<TransmissionRecord>, List<TransmissionRecord>> =
+    private fun List<TransmissionRecord>.splitAt(time: LocalDateTime):
+            Pair<List<TransmissionRecord>, List<TransmissionRecord>> =
             when {
                 isEmpty() -> Pair(listOf(), listOf())
                 time.isBefore(first().startTime) -> Pair(listOf(), this)
@@ -141,7 +153,9 @@ class AsyncSequentialTransmissionStream(
     private infix fun List<TransmissionRecord>.mergeWith(tail: List<TransmissionRecord>) = when {
         isEmpty() -> tail
         tail.isEmpty() -> this
-        last().endTime == tail.first().startTime -> dropLast(1) + TransmissionRecord(last().startTime, last().duration + tail.first().duration) + tail.drop(1)
+        last().endTime == tail.first().startTime -> dropLast(1) +
+                TransmissionRecord(last().startTime, last().duration + tail.first().duration) +
+                tail.drop(1)
         else -> this + tail
     }
 

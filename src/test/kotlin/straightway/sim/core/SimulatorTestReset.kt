@@ -21,7 +21,7 @@ import straightway.testing.flow.Empty
 import straightway.testing.flow.expect
 import straightway.testing.flow.is_
 
-internal class SimulatorTestReset : SimulatorTest() {
+class SimulatorTestReset : SimulatorTest() {
 
     @Test fun withoutEvent_hasNoEffect() = (sut as Controller).reset()
 

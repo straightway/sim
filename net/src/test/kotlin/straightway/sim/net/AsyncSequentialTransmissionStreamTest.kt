@@ -69,13 +69,15 @@ class AsyncSequentialTransmissionStreamTest : TestBase<AsyncSequentialTransmissi
     @Test
     fun receiverIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
-        expect({ transmit(message(100[bit]) from channel(10[bit / second]) to otherChannel) } does Not - Throw - exception)
+        expect({ transmit(message(100[bit]) from channel(10[bit / second]) to otherChannel) }
+                does Not - Throw - exception)
     }
 
     @Test
     fun senderIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
-        expect({ transmit(message(100[bit]) from otherChannel to channel(10[bit / second])) } does Not - Throw - exception)
+        expect({ transmit(message(100[bit]) from otherChannel to channel(10[bit / second])) }
+                does Not - Throw - exception)
     }
 
     @Test

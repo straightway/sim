@@ -34,9 +34,10 @@ import straightway.testing.flow.to_
 import straightway.units.get
 import straightway.units.minute
 
-internal class SimulatorTestPause : SimulatorTest() {
+class SimulatorTestPause : SimulatorTest() {
 
-    @Test fun withoutEvent_hasNoEffect() = (sut as Controller).pause()
+    @Test
+    fun withoutEvent_hasNoEffect() = (sut as Controller).pause()
 
     @Test
     fun calledWhileRunning_stopsSimulation() {
