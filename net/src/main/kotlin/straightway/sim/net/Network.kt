@@ -28,7 +28,8 @@ class Network(
         val latency: UnitNumber<Time>) {
 
     fun send(sender: Node, receiver: Node, message: Message) {
-        val transmissionFinishedTime = transmit(message from sender.uploadStream to receiver.downloadStream)
+        val transmissionFinishedTime = transmit(
+                message from sender.uploadStream to receiver.downloadStream)
         val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
         simScheduler.schedule(transmissionDuration + latency) {
             notify(receiver) received message from sender

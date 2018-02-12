@@ -66,7 +66,9 @@ class AsyncSequentialTransmissionStream(
     val scheduledTransmissions get() = _scheduledTransmissions
 
     private fun discardExpiredTransmissions() {
-        _scheduledTransmissions = _scheduledTransmissions.dropWhile { it.endTime < timeProvider.currentTime }
+        _scheduledTransmissions = _scheduledTransmissions.dropWhile {
+            it.endTime < timeProvider.currentTime
+        }
     }
 
     private fun acceptOwn(offer: TransmitOffer) {
@@ -76,9 +78,11 @@ class AsyncSequentialTransmissionStream(
     private fun acceptForeign(offer: TransmitOffer) {
         val splitScheduledTransmissions = _scheduledTransmissions.splitAt(offer.finishTime)
         val reverseFirst = splitScheduledTransmissions.first.reverse
-        val scheduler = TransmissionScheduler(reverseFirst, offer.finishTime, -offer.request.duration)
+        val scheduler =
+                TransmissionScheduler(reverseFirst, offer.finishTime, -offer.request.duration)
         val reverseScheduled = scheduler.transmissions
-        _scheduledTransmissions = reverseScheduled.reverse mergeWith splitScheduledTransmissions.second
+        _scheduledTransmissions =
+                reverseScheduled.reverse mergeWith splitScheduledTransmissions.second
     }
 
     private fun TransmitRequest.createOffer(): TransmitOffer {
@@ -91,14 +95,20 @@ class AsyncSequentialTransmissionStream(
     }
 
     private val TransmitRequest.scheduledTransmissionsWithNewRequest
-        get() = TransmissionScheduler(_scheduledTransmissions, timeProvider.currentTime, duration).transmissions
+        get() = TransmissionScheduler(
+                _scheduledTransmissions,
+                timeProvider.currentTime,
+                duration).transmissions
 
-    private class TransmissionScheduler(private val scheduledTransmissions: List<TransmissionRecord>,
-                                        private val startTime: LocalDateTime,
-                                        private val duration: UnitNumber<Time>) {
+    private class TransmissionScheduler(
+            private val scheduledTransmissions: List<TransmissionRecord>,
+            private val startTime: LocalDateTime,
+            private val duration: UnitNumber<Time>) {
 
         val transmissions: List<TransmissionRecord>
-            get() = if (canBeEntirelyTransmittedFirst) listOf(newCompleteTransmission) + scheduledTransmissions
+            get() =
+                    if (canBeEntirelyTransmittedFirst)
+                        listOf(newCompleteTransmission) + scheduledTransmissions
                     else listOf(mergedFirstTransmission) + restSchedule.drop(1)
 
         private val canBeEntirelyTransmittedFirst
@@ -159,10 +169,11 @@ class AsyncSequentialTransmissionStream(
         else -> this + tail
     }
 
-    private val List<TransmissionRecord>.reverse: List<TransmissionRecord>
-        get() = if (isEmpty()) this else drop(1).reverse + first().reverse
+    private val List<TransmissionRecord>.reverse: List<TransmissionRecord> get() =
+            if (isEmpty()) this else drop(1).reverse + first().reverse
 
-    private val TransmissionRecord.reverse get() = TransmissionRecord(startTime + duration, -duration)
+    private val TransmissionRecord.reverse get() =
+            TransmissionRecord(startTime + duration, -duration)
 
     private var _scheduledTransmissions = listOf<TransmissionRecord>()
 }

@@ -47,8 +47,10 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
             sut.run {
                 network.send(sender, receiver, message)
                 expect(log.entries is_ equal to_ listOf(
-                        "00:00:00: sender_upload: Transmit $message from sender_upload to receiver_download",
-                        "00:00:00: receiver_download: Transmit $message from sender_upload to receiver_download"))
+                        "00:00:00: sender_upload: Transmit $message from sender_upload " +
+                                "to receiver_download",
+                        "00:00:00: receiver_download: Transmit $message from sender_upload " +
+                                "to receiver_download"))
             }
 
     @Test
@@ -58,6 +60,7 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
                 network.send(sender, receiver, message)
                 log.entries.clear()
                 simulator.run()
-                expect(log.entries is_ equal to_ listOf("00:03:02: Receive $message from sender to receiver"))
+                expect(log.entries is_ equal to_ listOf("00:03:02: Receive $message " +
+                        "from sender to receiver"))
             }
 }
