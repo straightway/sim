@@ -22,6 +22,9 @@ import straightway.units.UnitNumber
 import straightway.units.minus
 import straightway.units.plus
 
+/**
+ * A simulated network consisting of nodes.
+ */
 class Network(
         private val simScheduler: Scheduler,
         private val timeProvider: TimeProvider,

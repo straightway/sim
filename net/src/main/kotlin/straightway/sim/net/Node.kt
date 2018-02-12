@@ -15,22 +15,11 @@
  */
 package straightway.sim.net
 
+/**
+ * A node within a simulated network.
+ */
 interface Node {
     val uploadStream: TransmissionStream
     val downloadStream: TransmissionStream
     fun notifyReceive(sender: Node, message: Message)
 }
-
-class PartialTransmission(private val receiver: Node) {
-    infix fun from(sender: Node) {
-        receiver.notifyReceive(sender, message)
-    }
-
-    infix fun received(message: Message): PartialTransmission {
-        this.message = message; return this
-    }
-
-    private lateinit var message: Message
-}
-
-fun notify(receiver: Node) = PartialTransmission(receiver)

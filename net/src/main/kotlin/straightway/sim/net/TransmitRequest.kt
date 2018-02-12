@@ -16,8 +16,13 @@
 
 package straightway.sim.net
 
+/**
+ * A request to transmit a message over a transmission stream.
+ */
 class TransmitRequest(val message: Message, val sender: TransmissionStream) {
+
     val receiver: TransmissionStream get() = _receiver!!
+
     infix fun to(receiver: TransmissionStream): TransmitRequest {
         this._receiver = receiver
         return this

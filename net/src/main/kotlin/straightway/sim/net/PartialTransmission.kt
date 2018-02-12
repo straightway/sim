@@ -13,12 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package straightway.sim.net
 
-import straightway.units.AmountOfData
-import straightway.units.UnitValue
-
 /**
- * A simulated network message with an explicitly specified size.
+ * A transmission builder class, allowing to specify a transmission using a sequence of statements.
  */
-data class Message(val content: Any, val size: UnitValue<Int, AmountOfData>)
+class PartialTransmission(private val receiver: Node) {
+
+    infix fun from(sender: Node) {
+        receiver.notifyReceive(sender, message)
+    }
+
+    infix fun received(message: Message): PartialTransmission {
+        this.message = message; return this
+    }
+
+    private lateinit var message: Message
+}
+
+fun notify(receiver: Node) = PartialTransmission(receiver)
