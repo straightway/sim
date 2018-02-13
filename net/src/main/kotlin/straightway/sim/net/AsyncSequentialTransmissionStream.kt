@@ -34,8 +34,8 @@ import java.time.LocalDateTime
  * its notifyReceive date is determined by the slowest of both channels. It never changes.
  */
 class AsyncSequentialTransmissionStream(
-    private val bandwidth: UnitValue<Int, Bandwidth>,
-    private val timeProvider: TimeProvider) : TransmissionStream {
+        private val bandwidth: UnitValue<Int, Bandwidth>,
+        private val timeProvider: TimeProvider) : TransmissionStream {
 
     data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNumber<Time>) {
         val endTime: LocalDateTime by lazy { startTime + duration }
@@ -50,7 +50,7 @@ class AsyncSequentialTransmissionStream(
                 duration.hashCode()
 
         companion object {
-            private val EQUALITY_THRESHOLD_NS = 10
+            private const val EQUALITY_THRESHOLD_NS = 10
             private val EQUALITY_THRESHOLD = EQUALITY_THRESHOLD_NS[nano(second)]
         }
     }
@@ -147,18 +147,30 @@ class AsyncSequentialTransmissionStream(
 
     private fun List<TransmissionRecord>.splitAt(time: LocalDateTime):
             Pair<List<TransmissionRecord>, List<TransmissionRecord>> =
+            if (isEmpty()) Pair(listOf(), listOf()) else splitNonEmptyAt(time)
+
+    private fun List<TransmissionRecord>.splitNonEmptyAt(time: LocalDateTime) =
             when {
-                isEmpty() -> Pair(listOf(), listOf())
-                time.isBefore(first().startTime) -> Pair(listOf(), this)
-                last().endTime.isBefore(time) -> Pair(this, listOf())
-                time.isBefore(first().endTime) -> Pair(
-                        listOf(TransmissionRecord(first().startTime, time - first().startTime)),
-                        listOf(TransmissionRecord(time, first().endTime - time)) + drop(1))
-                else -> {
-                    val restSplit = drop(1).splitAt(time)
-                    Pair(listOf(first()) + restSplit.first, restSplit.second)
-                }
+                time.isBefore(startTime) -> Pair(listOf(), this)
+                endTime.isBefore(time) -> Pair(this, listOf())
+                time.isBefore(first().endTime) -> splitFirstRecordAt(time)
+                else -> splitInTheMiddleAt(time)
             }
+
+    private fun List<TransmissionRecord>.splitInTheMiddleAt(time: LocalDateTime):
+            Pair<List<TransmissionRecord>, List<TransmissionRecord>> {
+        val restSplit = drop(1).splitAt(time)
+        return Pair(listOf(first()) + restSplit.first, restSplit.second)
+    }
+
+    private fun List<TransmissionRecord>.splitFirstRecordAt(time: LocalDateTime) =
+            Pair(
+                    listOf(TransmissionRecord(first().startTime, time - first().startTime)),
+                    listOf(TransmissionRecord(time, first().endTime - time)) + drop(1))
+
+    private val List<TransmissionRecord>.startTime: LocalDateTime get() = first().startTime
+
+    private val List<TransmissionRecord>.endTime: LocalDateTime get() = last().endTime
 
     private infix fun List<TransmissionRecord>.mergeWith(tail: List<TransmissionRecord>) = when {
         isEmpty() -> tail
@@ -169,11 +181,13 @@ class AsyncSequentialTransmissionStream(
         else -> this + tail
     }
 
-    private val List<TransmissionRecord>.reverse: List<TransmissionRecord> get() =
-            if (isEmpty()) this else drop(1).reverse + first().reverse
+    private val List<TransmissionRecord>.reverse: List<TransmissionRecord>
+        get() =
+                if (isEmpty()) this else drop(1).reverse + first().reverse
 
-    private val TransmissionRecord.reverse get() =
-            TransmissionRecord(startTime + duration, -duration)
+    private val TransmissionRecord.reverse
+        get() =
+                TransmissionRecord(startTime + duration, -duration)
 
     private var _scheduledTransmissions = listOf<TransmissionRecord>()
 }
