@@ -220,7 +220,7 @@ class AsyncSequentialTransmissionStreamTest :
     }
 
     private fun transmissionBlock(startTime: UnitNumber<Time>, duration: UnitNumber<Time>) =
-            AsyncSequentialTransmissionStream.TransmissionRecord(
+            TransmissionRecord(
                     LocalDateTime.of(0, 1, 1, 0, 0) + startTime,
                     duration)
 

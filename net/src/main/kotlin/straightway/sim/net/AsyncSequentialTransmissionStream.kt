@@ -17,17 +17,12 @@ package straightway.sim.net
 
 import straightway.sim.TimeProvider
 import straightway.units.Bandwidth
-import straightway.units.Time
-import straightway.units.UnitNumber
 import straightway.units.UnitValue
-import straightway.units.abs
 import straightway.units.div
 import straightway.units.get
 import straightway.units.minus
-import straightway.units.nano
 import straightway.units.plus
 import straightway.units.second
-import java.time.LocalDateTime
 
 /**
  * TransmissionStream transmitting a message to a receiver channel. When the request is accepted,
@@ -36,24 +31,6 @@ import java.time.LocalDateTime
 class AsyncSequentialTransmissionStream(
         private val bandwidth: UnitValue<Int, Bandwidth>,
         private val timeProvider: TimeProvider) : TransmissionStream {
-
-    data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNumber<Time>) {
-        val endTime: LocalDateTime by lazy { startTime + duration }
-        override fun equals(other: Any?) =
-                if (other is TransmissionRecord)
-                    abs(startTime - other.startTime) < EQUALITY_THRESHOLD &&
-                            abs(duration - other.duration) < EQUALITY_THRESHOLD
-                else super.equals(other)
-
-        override fun hashCode() = (startTime.nano / EQUALITY_THRESHOLD_NS).hashCode() xor
-                startTime.second.hashCode() xor
-                duration.hashCode()
-
-        companion object {
-            private const val EQUALITY_THRESHOLD_NS = 10
-            private val EQUALITY_THRESHOLD = EQUALITY_THRESHOLD_NS[nano(second)]
-        }
-    }
 
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
         discardExpiredTransmissions()
@@ -77,12 +54,17 @@ class AsyncSequentialTransmissionStream(
 
     private fun acceptForeign(offer: TransmitOffer) {
         val splitScheduledTransmissions = _scheduledTransmissions.splitAt(offer.finishTime)
+        val scheduled = scheduleForeignTransmissionOffer(splitScheduledTransmissions, offer)
+        _scheduledTransmissions = scheduled mergeWith splitScheduledTransmissions.second
+    }
+
+    private fun scheduleForeignTransmissionOffer(
+            splitScheduledTransmissions: Pair<List<TransmissionRecord>,
+            List<TransmissionRecord>>, offer: TransmitOffer): List<TransmissionRecord> {
         val reverseFirst = splitScheduledTransmissions.first.reverse
         val scheduler =
                 TransmissionScheduler(reverseFirst, offer.finishTime, -offer.request.duration)
-        val reverseScheduled = scheduler.transmissions
-        _scheduledTransmissions =
-                reverseScheduled.reverse mergeWith splitScheduledTransmissions.second
+        return scheduler.transmissions.reverse
     }
 
     private fun TransmitRequest.createOffer(): TransmitOffer {
@@ -100,86 +82,13 @@ class AsyncSequentialTransmissionStream(
                 timeProvider.currentTime,
                 duration).transmissions
 
-    private class TransmissionScheduler(
-            private val scheduledTransmissions: List<TransmissionRecord>,
-            private val startTime: LocalDateTime,
-            private val duration: UnitNumber<Time>) {
-
-        val transmissions: List<TransmissionRecord>
-            get() =
-                    if (canBeEntirelyTransmittedFirst)
-                        listOf(newCompleteTransmission) + scheduledTransmissions
-                    else listOf(mergedFirstTransmission) + restSchedule.drop(1)
-
-        private val canBeEntirelyTransmittedFirst
-            get() = abs(duration) < abs(firstGapSize) || scheduledTransmissions.isEmpty()
-
-        private val newCompleteTransmission
-            get() = TransmissionRecord(startTime, duration)
-
-        private val mergedFirstTransmission
-            get() = TransmissionRecord(
-                    startTime,
-                    firstGapSize + firstTransmission.duration + restSchedule.first().duration)
-
-        private val restSchedule by lazy {
-            TransmissionScheduler(
-                    scheduledTransmissions.drop(1),
-                    firstTransmission.endTime,
-                    duration - firstGapSize).transmissions
-        }
-
-        private val firstGapSize by lazy {
-            firstTransmission.startTime - startTime
-        }
-
-        private val firstTransmission by lazy {
-            scheduledTransmissions.firstOrNull() ?: TransmissionRecord(startTime, 0[second])
-        }
-    }
-
     private val TransmitRequest.duration get() = (message.size / bandwidth)[second]
 
     @Suppress("UNCHECKED_CAST")
     private val TransmitOffer.transmissions
         get() = memento as List<TransmissionRecord>
+
     private val TransmitOffer.isMyOwn get() = issuer === this@AsyncSequentialTransmissionStream
-
-    private fun List<TransmissionRecord>.splitAt(time: LocalDateTime):
-            Pair<List<TransmissionRecord>, List<TransmissionRecord>> =
-            if (isEmpty()) Pair(listOf(), listOf()) else splitNonEmptyAt(time)
-
-    private fun List<TransmissionRecord>.splitNonEmptyAt(time: LocalDateTime) =
-            when {
-                time.isBefore(startTime) -> Pair(listOf(), this)
-                endTime.isBefore(time) -> Pair(this, listOf())
-                time.isBefore(first().endTime) -> splitFirstRecordAt(time)
-                else -> splitInTheMiddleAt(time)
-            }
-
-    private fun List<TransmissionRecord>.splitInTheMiddleAt(time: LocalDateTime):
-            Pair<List<TransmissionRecord>, List<TransmissionRecord>> {
-        val restSplit = drop(1).splitAt(time)
-        return Pair(listOf(first()) + restSplit.first, restSplit.second)
-    }
-
-    private fun List<TransmissionRecord>.splitFirstRecordAt(time: LocalDateTime) =
-            Pair(
-                    listOf(TransmissionRecord(first().startTime, time - first().startTime)),
-                    listOf(TransmissionRecord(time, first().endTime - time)) + drop(1))
-
-    private val List<TransmissionRecord>.startTime: LocalDateTime get() = first().startTime
-
-    private val List<TransmissionRecord>.endTime: LocalDateTime get() = last().endTime
-
-    private infix fun List<TransmissionRecord>.mergeWith(tail: List<TransmissionRecord>) = when {
-        isEmpty() -> tail
-        tail.isEmpty() -> this
-        last().endTime == tail.first().startTime -> dropLast(1) +
-                TransmissionRecord(last().startTime, last().duration + tail.first().duration) +
-                tail.drop(1)
-        else -> this + tail
-    }
 
     private val List<TransmissionRecord>.reverse: List<TransmissionRecord>
         get() =
