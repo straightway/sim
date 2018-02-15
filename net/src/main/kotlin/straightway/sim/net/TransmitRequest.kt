@@ -16,9 +16,6 @@
 
 package straightway.sim.net
 
-import straightway.units.div
-import straightway.units.get
-
 /**
  * A request to transmit a message over a transmission stream.
  */

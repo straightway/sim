@@ -19,7 +19,8 @@ import org.junit.jupiter.api.BeforeEach
 import straightway.testing.TestBase
 
 abstract class SimulatorTest : TestBase<Simulator>() {
-    @BeforeEach fun setUp() {
+    @BeforeEach
+    fun setUp() {
         sut = Simulator()
     }
 }

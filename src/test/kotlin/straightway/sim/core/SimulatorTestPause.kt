@@ -47,7 +47,8 @@ class SimulatorTestPause : SimulatorTest() {
         expect(sut.eventQueue has Size of 1)
     }
 
-    @Test fun callingRunAfterPause_resumesSimulation() {
+    @Test
+    fun callingRunAfterPause_resumesSimulation() {
         val numCalls = mutableListOf(0, 0)
         sut.schedule(1[minute]) { ++numCalls[0]; sut.pause() }
         sut.schedule(2[minute]) { ++numCalls[1] }

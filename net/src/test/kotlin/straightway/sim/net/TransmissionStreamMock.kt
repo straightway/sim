@@ -25,9 +25,10 @@ class TransmissionStreamMock(private val id: String, private val log: LogList) :
     }
 
     override fun accept(offer: TransmitOffer) {
-        log.add("$this: Transmit ${offer.request.message} " +
-                "from ${offer.request.sender} " +
-                "to ${offer.request.receiver}")
+        log.add(
+                "$this: Transmit ${offer.request.message} " +
+                        "from ${offer.request.sender} " +
+                        "to ${offer.request.receiver}")
     }
 
     var receiveTime = LocalDateTime.of(0, 1, 1, 0, 0)!!

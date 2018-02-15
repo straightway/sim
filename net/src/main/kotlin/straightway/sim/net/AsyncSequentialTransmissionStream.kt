@@ -20,7 +20,6 @@ import straightway.units.Bandwidth
 import straightway.units.UnitValue
 import straightway.units.div
 import straightway.units.get
-import straightway.units.minus
 import straightway.units.plus
 import straightway.units.second
 
@@ -30,7 +29,8 @@ import straightway.units.second
  */
 class AsyncSequentialTransmissionStream(
         private val bandwidth: UnitValue<Int, Bandwidth>,
-        private val timeProvider: TimeProvider) : TransmissionStream {
+        private val timeProvider: TimeProvider
+) : TransmissionStream {
 
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
         discardExpiredTransmissions()
@@ -60,7 +60,8 @@ class AsyncSequentialTransmissionStream(
 
     private fun scheduleForeignTransmissionOffer(
             splitScheduledTransmissions: Pair<List<TransmissionRecord>,
-            List<TransmissionRecord>>, offer: TransmitOffer): List<TransmissionRecord> {
+                    List<TransmissionRecord>>, offer: TransmitOffer
+    ): List<TransmissionRecord> {
         val reverseFirst = splitScheduledTransmissions.first.reverse
         val scheduler =
                 TransmissionScheduler(reverseFirst, offer.finishTime, -offer.request.duration)
@@ -92,11 +93,11 @@ class AsyncSequentialTransmissionStream(
 
     private val List<TransmissionRecord>.reverse: List<TransmissionRecord>
         get() =
-                if (isEmpty()) this else drop(1).reverse + first().reverse
+            if (isEmpty()) this else drop(1).reverse + first().reverse
 
     private val TransmissionRecord.reverse
         get() =
-                TransmissionRecord(startTime + duration, -duration)
+            TransmissionRecord(startTime + duration, -duration)
 
     private var _scheduledTransmissions = listOf<TransmissionRecord>()
 }

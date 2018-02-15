@@ -23,9 +23,11 @@ import straightway.testing.flow.is_
 
 class SimulatorTestReset : SimulatorTest() {
 
-    @Test fun withoutEvent_hasNoEffect() = (sut as Controller).reset()
+    @Test
+    fun withoutEvent_hasNoEffect() = (sut as Controller).reset()
 
-    @Test fun clearEventQueue() {
+    @Test
+    fun clearEventQueue() {
         sut.schedule(defaultEventDuration) {}
         sut.reset()
         expect(sut.eventQueue is_ Empty)

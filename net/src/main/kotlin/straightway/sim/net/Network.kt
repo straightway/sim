@@ -28,7 +28,8 @@ import straightway.units.plus
 class Network(
         private val simScheduler: Scheduler,
         private val timeProvider: TimeProvider,
-        val latency: UnitNumber<Time>) {
+        val latency: UnitNumber<Time>
+) {
 
     fun send(transmission: Transmission) = transmission.apply {
         val transmissionFinishedTime = transmit(request)

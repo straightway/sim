@@ -21,7 +21,8 @@ import java.time.LocalDateTime
  * An offer for a transmission, which would finish at a given time.
  */
 data class TransmitOffer(
-    val issuer: TransmissionStream,
-    val finishTime: LocalDateTime,
-    val request: TransmitRequest,
-    val memento: Any = Any())
+        val issuer: TransmissionStream,
+        val finishTime: LocalDateTime,
+        val request: TransmitRequest,
+        val memento: Any = Any()
+)

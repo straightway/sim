@@ -28,13 +28,14 @@ import java.time.LocalDateTime
 internal class TransmissionScheduler(
         private val scheduledTransmissions: List<TransmissionRecord>,
         private val startTime: LocalDateTime,
-        private val duration: UnitNumber<Time>) {
+        private val duration: UnitNumber<Time>
+) {
 
     val transmissions: List<TransmissionRecord>
         get() =
-                if (canBeEntirelyTransmittedFirst)
-                    listOf(newCompleteTransmission) + scheduledTransmissions
-                else listOf(mergedFirstTransmission) + restSchedule.drop(1)
+            if (canBeEntirelyTransmittedFirst)
+                listOf(newCompleteTransmission) + scheduledTransmissions
+            else listOf(mergedFirstTransmission) + restSchedule.drop(1)
 
     private val canBeEntirelyTransmittedFirst
         get() = abs(duration) < abs(firstGapSize) || scheduledTransmissions.isEmpty()
