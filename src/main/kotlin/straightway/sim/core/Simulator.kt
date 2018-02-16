@@ -42,10 +42,8 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     override fun run() {
         isRunning = true
-        while (isRunning && _eventQueue.any()) {
-            val nextEvent = popNextEvent()
-            execute(nextEvent)
-        }
+        while (isRunning && _eventQueue.any())
+            execute(popNextEvent())
     }
 
     override fun pause() {
@@ -57,9 +55,11 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     //<editor-fold desc="Private">
 
-    private fun findInsertPosFor(newEvent: Event): Int =
+    private fun findInsertPosFor(newEvent: Event) =
+            getIndexOfFirstEventAfter(newEvent).let { if (it < 0) _eventQueue.size else it }
+
+    private fun getIndexOfFirstEventAfter(newEvent: Event) =
             _eventQueue.indexOfFirst { newEvent.time < it.time }
-                    .let { if (it < 0) _eventQueue.size else it }
 
     private fun popNextEvent(): Event {
         val nextEvent = _eventQueue.first()

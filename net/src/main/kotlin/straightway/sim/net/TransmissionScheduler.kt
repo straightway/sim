@@ -25,7 +25,7 @@ import straightway.units.plus
 import straightway.units.second
 import java.time.LocalDateTime
 
-internal class TransmissionScheduler(
+internal data class TransmissionScheduler(
         private val scheduledTransmissions: List<TransmissionRecord>,
         private val startTime: LocalDateTime,
         private val duration: UnitNumber<Time>
