@@ -1,4 +1,6 @@
 #Coding Guideline
 1. Develop test driven
-1. Strive for 100% code coverage by unit tests
-1. Compile without errors or warnings
+1. Strive for 100% test coverage
+1. Only push code after
+    - all unit tests are green
+    - successful "./gradlew check"
