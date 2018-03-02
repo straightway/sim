@@ -19,17 +19,15 @@ import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import straightway.expr.minus
 import straightway.sim.Controller
-import straightway.testing.flow.Not
+import straightway.testing.flow.not
 import straightway.testing.flow.Size
-import straightway.testing.flow.Throw
 import straightway.testing.flow.does
 import straightway.testing.flow.equal
-import straightway.testing.flow.exception
 import straightway.testing.flow.expect
 import straightway.testing.flow.has
 import straightway.testing.flow.is_
-import straightway.testing.flow.minus
 import straightway.testing.flow.of
+import straightway.testing.flow.throw_
 import straightway.testing.flow.to_
 import straightway.units.get
 import straightway.units.minute
@@ -42,8 +40,8 @@ class SimulatorTestPause : SimulatorTest() {
     @Test
     fun calledWhileRunning_stopsSimulation() {
         sut.schedule(1[minute]) { sut.pause() }
-        sut.schedule(2[minute]) { fail("This event must Not be called") }
-        expect({ sut.run() } does Not - Throw - exception)
+        sut.schedule(2[minute]) { fail("This event must not be called") }
+        expect({ sut.run() } does not - throw_<Exception>())
         expect(sut.eventQueue has Size of 1)
     }
 

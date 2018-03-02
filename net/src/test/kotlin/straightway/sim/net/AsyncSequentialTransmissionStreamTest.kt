@@ -23,14 +23,12 @@ import straightway.expr.minus
 import straightway.sim.TimeProvider
 import straightway.sim.core.Simulator
 import straightway.testing.TestBase
-import straightway.testing.flow.Not
-import straightway.testing.flow.Throw
+import straightway.testing.flow.not
 import straightway.testing.flow.does
 import straightway.testing.flow.equal
-import straightway.testing.flow.exception
 import straightway.testing.flow.expect
 import straightway.testing.flow.is_
-import straightway.testing.flow.minus
+import straightway.testing.flow.throw_
 import straightway.testing.flow.to_
 import straightway.units.AmountOfData
 import straightway.units.Bandwidth
@@ -74,14 +72,14 @@ class AsyncSequentialTransmissionStreamTest :
     fun receiverIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
         expect({ transmit(message(100[bit]) from channel(10[bit / second]) to otherChannel) }
-                       does Not - Throw - exception)
+                       does not - throw_<Exception>())
     }
 
     @Test
     fun senderIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
         expect({ transmit(message(100[bit]) from otherChannel to channel(10[bit / second])) }
-                       does Not - Throw - exception)
+                       does not - throw_<Exception>())
     }
 
     @Test

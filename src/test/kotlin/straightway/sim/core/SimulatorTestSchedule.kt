@@ -61,6 +61,6 @@ internal class SimulatorTestSchedule : SimulatorTest() {
     }
 
     private companion object {
-        fun doNotCall() = fail<Unit>("must Not be called")!!
+        fun doNotCall() = fail<Unit>("must not be called")!!
     }
 }
