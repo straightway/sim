@@ -21,5 +21,5 @@ To include this library in a gradle build, add
 Then you can simply configure in your dependencies:
 
     dependencies {
-        compile "straightway:sim:0.1+"
+        compile "straightway:sim:0.3+"
     }
