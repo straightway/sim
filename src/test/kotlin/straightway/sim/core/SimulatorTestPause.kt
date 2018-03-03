@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import straightway.expr.minus
 import straightway.sim.Controller
 import straightway.testing.flow.not
-import straightway.testing.flow.Size
+import straightway.testing.flow.size
 import straightway.testing.flow.does
 import straightway.testing.flow.equal
 import straightway.testing.flow.expect
@@ -42,7 +42,7 @@ class SimulatorTestPause : SimulatorTest() {
         sut.schedule(1[minute]) { sut.pause() }
         sut.schedule(2[minute]) { fail("This event must not be called") }
         expect({ sut.run() } does not - throw_<Exception>())
-        expect(sut.eventQueue has Size of 1)
+        expect(sut.eventQueue has size of 1)
     }
 
     @Test

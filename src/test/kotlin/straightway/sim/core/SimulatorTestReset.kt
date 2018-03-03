@@ -17,7 +17,7 @@ package straightway.sim.core
 
 import org.junit.jupiter.api.Test
 import straightway.sim.Controller
-import straightway.testing.flow.Empty
+import straightway.testing.flow.empty
 import straightway.testing.flow.expect
 import straightway.testing.flow.is_
 
@@ -30,6 +30,6 @@ class SimulatorTestReset : SimulatorTest() {
     fun clearEventQueue() {
         sut.schedule(defaultEventDuration) {}
         sut.reset()
-        expect(sut.eventQueue is_ Empty)
+        expect(sut.eventQueue is_ empty)
     }
 }
