@@ -23,7 +23,7 @@ import straightway.testing.flow.Not
 import straightway.testing.flow.Size
 import straightway.testing.flow.Throw
 import straightway.testing.flow.does
-import straightway.testing.flow.equal
+import straightway.testing.flow.Equal
 import straightway.testing.flow.expect
 import straightway.testing.flow.has
 import straightway.testing.flow.is_
@@ -50,10 +50,10 @@ class SimulatorTestPause : SimulatorTest() {
         val numCalls = mutableListOf(0, 0)
         sut.schedule(1[minute]) { ++numCalls[0]; sut.pause() }
         sut.schedule(2[minute]) { ++numCalls[1] }
-        expect(numCalls is_ equal to_ listOf(0, 0))
+        expect(numCalls is_ Equal to_ listOf(0, 0))
         sut.run()
-        expect(numCalls is_ equal to_ listOf(1, 0))
+        expect(numCalls is_ Equal to_ listOf(1, 0))
         sut.run()
-        expect(numCalls is_ equal to_ listOf(1, 1))
+        expect(numCalls is_ Equal to_ listOf(1, 1))
     }
 }
