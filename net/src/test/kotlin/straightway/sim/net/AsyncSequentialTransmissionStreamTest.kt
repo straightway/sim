@@ -71,117 +71,136 @@ class AsyncSequentialTransmissionStreamTest :
     @Test
     fun receiverIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
-        expect({ transmit(message(100[bit]) from channel(10[bit / second]) to otherChannel) }
-                       does Not - Throw.exception)
+        expect({ scheduleTransmission(message(100[bit])
+                      from channel(10[bit / second]) to otherChannel) }
+                      does Not - Throw.exception)
     }
 
     @Test
     fun senderIsNoAsyncSequentialChannel_doesNotThrow() = sut.run {
         val otherChannel = TransmissionStreamMock("other", TimeLog(Simulator()))
-        expect({ transmit(message(100[bit]) from otherChannel to channel(10[bit / second])) }
-                       does Not - Throw.exception)
+        expect({ scheduleTransmission(message(100[bit])
+                      from otherChannel to channel(10[bit / second])) }
+                      does Not - Throw.exception)
     }
 
     @Test
     fun lowerBandwidthDeterminesTransmissionTime() = sut.run {
-        val time = transmit(
+        val time = scheduleTransmission(
                 message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 10[second])
     }
 
     @Test
     fun secondTransmissionGoesOnTop_sameChannels_sameDirection() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        val time = transmit(
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
+        val time = scheduleTransmission(
                 message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 20[second])
     }
 
     @Test
     fun secondTransmissionGoesOnTop_sameChannels_oppositeDirection() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        val time = transmit(
+        scheduleTransmission(message(100[bit])
+                 from channel(10[bit / second]) to channel(100[bit / second]))
+        val time = scheduleTransmission(
                 message(100[bit]) from channel(100[bit / second]) to channel(10[bit / second]))
         expect(time.unitValue is_ Equal to_ 20[second])
     }
 
     @Test
     fun secondTransmissionComesFirst_ifGapIsLargeEnough() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        val time = transmit(
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                 to channel(100[bit / second]))
+        val time = scheduleTransmission(
                 message(100[bit]) from channel(100[bit / second]) to channel(1000[bit / second]))
         expect(time.unitValue is_ Equal to_ 1[second])
     }
 
     @Test
     fun secondTransmissionOverlapsFirstTransmission() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        val time = transmit(
-                message(1000[bit]) from channel(100[bit / second]) to channel(200[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                 to channel(100[bit / second]))
+        val time = scheduleTransmission(
+                 message(1000[bit]) from channel(100[bit / second]) to channel(200[bit / second]))
         expect(time.unitValue is_ Equal to_ 11[second])
     }
 
     @Test
     fun thirdTransmissionOverlapsTwoPreviousTransmissions() = sut.run {
-        transmit(message(100[bit]) from channel(50[bit / second]) to channel(100[bit / second]))
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        val time = transmit(
-                message(1000[bit]) from channel(100[bit / second]) to channel(200[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(50[bit / second])
+                                     to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
+        val time = scheduleTransmission(
+                message(1000[bit]) from channel(100[bit / second])
+                        to channel(200[bit / second]))
         expect(time.unitValue is_ Equal to_ 12[second])
     }
 
     @Test
     fun twoFilledOverlayGaps() = sut.run {
-        transmit(message(100[bit]) from channel(50[bit / second]) to channel(100[bit / second]))
-        transmit(message(100[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
-        transmit(message(600[bit]) from channel(100[bit / second]) to channel(200[bit / second]))
-        val time = transmit(
-                message(400[bit]) from channel(100[bit / second]) to channel(300[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(50[bit / second])
+                                     to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(20[bit / second])
+                                     to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
+        scheduleTransmission(message(600[bit]) from channel(100[bit / second])
+                                     to channel(200[bit / second]))
+        val time = scheduleTransmission(
+                message(400[bit]) from channel(100[bit / second])
+                        to channel(300[bit / second]))
         expect(time.unitValue is_ Equal to_ 13[second])
     }
 
     @Test
     fun foreignOfferIstScheduledAtEndTime() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_
                         listOf(transmissionBlock(9[second], 1[second])))
 
-        var time = transmit(
+        var time = scheduleTransmission(
                 message(899[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 8.99[second])
-        time = transmit(
+        time = scheduleTransmission(
                 message(1[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 10[second])
     }
 
     @Test
     fun secondForeignOfferWithSameEndTimeIstScheduledBeforeFirstOne() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second])))
-        transmit(message(200[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(200[bit]) from channel(20[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(7[second], 3[second])))
 
-        var time = transmit(
+        var time = scheduleTransmission(
                 message(699[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 6.99[second])
-        time = transmit(
+        time = scheduleTransmission(
                 message(1[bit]) from channel(200[bit / second]) to channel(100[bit / second]))
         expect(time.unitValue is_ Equal to_ 10[second])
     }
 
     @Test
     fun foreignOfferEndsInTheMiddleOfExistingTransmissionAndIsScheduledBefore() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second])))
-        transmit(message(190[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(190[bit]) from channel(20[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(7.1[second], 2.9[second])))
@@ -189,18 +208,21 @@ class AsyncSequentialTransmissionStreamTest :
 
     @Test
     fun foreignOffersNotOverlappingAddedInBetween() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second])))
 
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second]),
                         transmissionBlock(19[second], 1[second])))
 
-        transmit(message(300[bit]) from channel(20[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(300[bit]) from channel(20[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second]),
@@ -210,7 +232,8 @@ class AsyncSequentialTransmissionStreamTest :
 
     @Test
     fun oldTransmissionsAreCleanedUp_onTransmissionRequest() = sut.run {
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(9[second], 1[second])))
@@ -220,7 +243,8 @@ class AsyncSequentialTransmissionStreamTest :
 
         currentTime += 100[second]
 
-        transmit(message(100[bit]) from channel(10[bit / second]) to channel(100[bit / second]))
+        scheduleTransmission(message(100[bit]) from channel(10[bit / second])
+                                     to channel(100[bit / second]))
         expect(
                 channel(100[bit / second]).scheduledTransmissions is_ Equal to_ listOf(
                         transmissionBlock(109[second], 1[second])))

@@ -32,7 +32,7 @@ class TransmitRequest(val message: Message, val sender: TransmissionStream) {
 }
 
 infix fun Message.from(sender: TransmissionStream) = TransmitRequest(this, sender)
-fun transmit(request: TransmitRequest) = request.run {
+fun scheduleTransmission(request: TransmitRequest) = request.run {
     val sendOffer = sender.requestTransmission(request)
     val receiveOffer = receiver.requestTransmission(request)
     val slowerOffer =

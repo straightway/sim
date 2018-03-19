@@ -29,13 +29,15 @@ class Network(
         private val simScheduler: Scheduler,
         private val timeProvider: TimeProvider,
         val latency: UnitNumber<Time>
-) {
+) : TransmissionRequestHandler {
 
-    fun send(transmission: Transmission) = transmission.apply {
-        val transmissionFinishedTime = transmit(request)
-        val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
-        simScheduler.schedule(transmissionDuration + latency) {
-            notify(receiver) received message from sender
+    override fun transmit(transmission: Transmission) {
+        transmission.apply {
+            val transmissionFinishedTime = scheduleTransmission(request)
+            val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
+            simScheduler.schedule(transmissionDuration + latency) {
+                notify(receiver) received message from sender
+            }
         }
     }
 }

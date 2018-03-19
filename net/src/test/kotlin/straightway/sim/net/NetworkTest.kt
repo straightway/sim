@@ -46,7 +46,7 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
     @Test
     fun send_triggersTransmissionOnChannels() =
             sut.run {
-                network.send(Transmission(sender, receiver, message))
+                network.transmit(Transmission(sender, receiver, message))
                 expect(
                         log.entries is_ Equal to_ listOf(
                                 "00:00:00: sender_upload: Transmit $message " +
@@ -61,7 +61,7 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
     fun send_schedulesReceiveCall() =
             sut.run {
                 sender.uploadStream.receiveTime = LocalDateTime.of(0, 1, 1, 0, 3)
-                network.send(Transmission(sender, receiver, message))
+                network.transmit(Transmission(sender, receiver, message))
                 log.entries.clear()
                 simulator.run()
                 expect(
