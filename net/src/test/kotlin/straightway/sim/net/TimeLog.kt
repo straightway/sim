@@ -15,7 +15,7 @@
  */
 package straightway.sim.net
 
-import straightway.sim.TimeProvider
+import straightway.utils.TimeProvider
 import java.time.format.DateTimeFormatter
 
 class TimeLog(private val timeProvider: TimeProvider) : LogList {

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import straightway.sim.Controller
 import straightway.sim.Scheduler
-import straightway.sim.TimeProvider
+import straightway.utils.TimeProvider
 
 @Suppress("USELESS_IS_CHECK")
 internal class SimulatorTestInterfaces : SimulatorTest() {

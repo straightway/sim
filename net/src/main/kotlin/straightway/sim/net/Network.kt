@@ -16,11 +16,11 @@
 package straightway.sim.net
 
 import straightway.sim.Scheduler
-import straightway.sim.TimeProvider
 import straightway.units.Time
 import straightway.units.UnitNumber
 import straightway.units.minus
 import straightway.units.plus
+import straightway.utils.TimeProvider
 
 /**
  * A simulated network consisting of nodes.

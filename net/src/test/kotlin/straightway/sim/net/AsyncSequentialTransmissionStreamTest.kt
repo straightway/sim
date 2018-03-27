@@ -20,7 +20,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import straightway.expr.minus
-import straightway.sim.TimeProvider
 import straightway.sim.core.Simulator
 import straightway.testing.TestBase
 import straightway.testing.flow.Not
@@ -42,6 +41,7 @@ import straightway.units.get
 import straightway.units.plus
 import straightway.units.second
 import straightway.units.unitValue
+import straightway.utils.TimeProvider
 import java.time.LocalDateTime
 
 class AsyncSequentialTransmissionStreamTest :

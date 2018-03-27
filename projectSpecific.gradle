@@ -18,5 +18,6 @@ ext.uploadToRepository = true
 
 dependencies {
     compile straightway('units')
+    compile straightway('utils')
     testCompile straightway('testing')
 }

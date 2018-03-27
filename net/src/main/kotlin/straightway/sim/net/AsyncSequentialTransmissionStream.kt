@@ -15,13 +15,13 @@
  */
 package straightway.sim.net
 
-import straightway.sim.TimeProvider
 import straightway.units.Bandwidth
 import straightway.units.UnitValue
 import straightway.units.div
 import straightway.units.get
 import straightway.units.plus
 import straightway.units.second
+import straightway.utils.TimeProvider
 
 /**
  * TransmissionStream transmitting a message to a receiver channel. When the request is accepted,

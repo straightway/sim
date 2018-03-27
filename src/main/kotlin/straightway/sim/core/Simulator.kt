@@ -18,7 +18,7 @@ package straightway.sim.core
 import straightway.sim.Controller
 import straightway.sim.Event
 import straightway.sim.Scheduler
-import straightway.sim.TimeProvider
+import straightway.utils.TimeProvider
 import straightway.units.Time
 import straightway.units.UnitValue
 import straightway.units.plus
