@@ -20,6 +20,8 @@ import java.time.LocalDateTime
 class TransmissionStreamMock(private val id: String, private val log: LogList) :
         TransmissionStream {
 
+    override var isOnline = true
+
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
         return TransmitOffer(this, receiveTime, request)
     }

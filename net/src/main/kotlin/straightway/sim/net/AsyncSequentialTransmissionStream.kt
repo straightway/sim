@@ -15,6 +15,7 @@
  */
 package straightway.sim.net
 
+import straightway.error.Panic
 import straightway.units.Bandwidth
 import straightway.units.UnitValue
 import straightway.units.div
@@ -32,13 +33,18 @@ class AsyncSequentialTransmissionStream(
         private val timeProvider: TimeProvider
 ) : TransmissionStream {
 
+    override var isOnline = true
+
     override fun requestTransmission(request: TransmitRequest): TransmitOffer {
+        if (!isOnline) throw Panic("Stream is offline")
         discardExpiredTransmissions()
         return request.createOffer()
     }
 
-    override fun accept(offer: TransmitOffer) =
-            if (offer.isMyOwn) acceptOwn(offer) else acceptForeign(offer)
+    override fun accept(offer: TransmitOffer) {
+        if (!isOnline) throw Panic("Stream is offline")
+        if (offer.isMyOwn) acceptOwn(offer) else acceptForeign(offer)
+    }
 
     val scheduledTransmissions get() = _scheduledTransmissions
 

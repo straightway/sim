@@ -19,6 +19,7 @@ import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.mock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import straightway.error.Panic
 import straightway.expr.minus
 import straightway.sim.core.Simulator
 import straightway.testing.TestBase
@@ -28,6 +29,7 @@ import straightway.testing.flow.Equal
 import straightway.testing.flow.expect
 import straightway.testing.flow.is_
 import straightway.testing.flow.Throw
+import straightway.testing.flow.True
 import straightway.testing.flow.to_
 import straightway.units.AmountOfData
 import straightway.units.Bandwidth
@@ -66,6 +68,31 @@ class AsyncSequentialTransmissionStreamTest :
     @BeforeEach
     fun setup() {
         sut = Environment()
+    }
+
+    @Test
+    fun `is initially online`() = sut.run {
+        expect(channel(10[bit/second]).isOnline is_ True)
+    }
+
+    @Test
+    fun `requesting a transmission on an offline stream panics`() = sut.run {
+        val testChannel = channel(10[bit/second])
+        testChannel.isOnline = false
+        val request = TransmitRequest(message(), channel(12[bit/second]))
+        expect({ testChannel.requestTransmission(request) } does Throw.type<Panic>())
+    }
+
+    @Test
+    fun `accepting a transmission on an offline stream panics`() = sut.run {
+        val testChannel = channel(10[bit/second])
+        testChannel.isOnline = false
+        expect({ testChannel.accept(
+                TransmitOffer(
+                    issuer = channel(12[bit/second]),
+                    finishTime = LocalDateTime.of(2000, 1, 1, 0, 0),
+                    request = TransmitRequest(message(), channel(12[bit/second]))))
+               } does Throw.type<Panic>())
     }
 
     @Test
