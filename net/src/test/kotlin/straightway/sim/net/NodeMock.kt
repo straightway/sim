@@ -16,11 +16,17 @@
 package straightway.sim.net
 
 class NodeMock(private val id: String, private val log: LogList) : Node {
-    override val isOnline = true
+    override var isOnline = true
     override val uploadStream = TransmissionStreamMock(id + "_upload", log)
     override val downloadStream = TransmissionStreamMock(id + "_download", log)
     override fun notifyReceive(sender: Node, message: Message) {
         log.add("Receive $message from $sender to $this")
+    }
+    override fun notifySuccess(receiver: Node) {
+        log.add("Successfully sent from $this to $receiver")
+    }
+    override fun notifyFailure(receiver: Node) {
+        log.add("Failure sending from $this to $receiver")
     }
 
     override fun toString() = id

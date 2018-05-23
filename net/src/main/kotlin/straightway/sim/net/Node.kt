@@ -18,9 +18,8 @@ package straightway.sim.net
 /**
  * A node within a simulated network.
  */
-interface Node {
+interface Node : TransmissionResultListener {
     val isOnline: Boolean
     val uploadStream: TransmissionStream
     val downloadStream: TransmissionStream
-    fun notifyReceive(sender: Node, message: Message)
 }

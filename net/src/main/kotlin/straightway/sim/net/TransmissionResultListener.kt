@@ -17,19 +17,10 @@
 package straightway.sim.net
 
 /**
- * A transmission builder class, allowing to specify a transmission using a sequence of statements.
+ * Listener for results of a data transmission.
  */
-class PartialTransmission(private val receiver: Node) {
-
-    infix fun from(sender: Node) {
-        receiver.notifyReceive(sender, message)
-    }
-
-    infix fun received(message: Message): PartialTransmission {
-        this.message = message; return this
-    }
-
-    private lateinit var message: Message
+interface TransmissionResultListener {
+    fun notifyReceive(sender: Node, message: Message)
+    fun notifySuccess(receiver: Node)
+    fun notifyFailure(receiver: Node)
 }
-
-fun notify(receiver: Node) = PartialTransmission(receiver)

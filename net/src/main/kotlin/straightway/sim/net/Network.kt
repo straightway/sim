@@ -28,16 +28,36 @@ import straightway.utils.TimeProvider
 class Network(
         private val simScheduler: Scheduler,
         private val timeProvider: TimeProvider,
-        val latency: UnitNumber<Time>
+        val latency: UnitNumber<Time>,
+        val offlineDetectionTime: UnitNumber<Time>
 ) : TransmissionRequestHandler {
 
     override fun transmit(transmission: Transmission) {
         transmission.apply {
-            val transmissionFinishedTime = scheduleTransmission(request)
-            val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
-            simScheduler.schedule(transmissionDuration + latency) {
-                notify(receiver) received message from sender
+            when {
+                receiver.isOffline -> schedule(offlineDetectionTime) { notifyFailure() }
+                sender.isOffline -> notifyFailure()
+                else -> scheduleTransmission()
             }
         }
     }
+
+    private fun Transmission.scheduleTransmission() {
+        val transmissionFinishedTime = scheduleTransmission(request)
+        val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
+        schedule(transmissionDuration + latency) { notifySuccess() }
+    }
+
+    private fun schedule(time: UnitNumber<Time>, action: () -> Unit) =
+            simScheduler.schedule(time, action)
+
+    private fun Transmission.notifySuccess() {
+        receiver.notifyReceive(sender, message)
+        sender.notifySuccess(receiver)
+    }
+
+    private fun Transmission.notifyFailure() =
+            sender.notifyFailure(receiver)
+
+    private val Node.isOffline get() = !isOnline
 }

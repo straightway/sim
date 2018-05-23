@@ -31,10 +31,15 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
 
     inner class Environment {
         val simulator = Simulator()
-        val log = TimeLog(simulator)
-        val network = Network(simulator, simulator, latency = 2[second])
-        var sender = NodeMock("sender", log)
-        var receiver = NodeMock("receiver", log)
+        val senderLog = TimeLog(simulator)
+        val receiverLog = TimeLog(simulator)
+        val network = Network(
+                simScheduler = simulator,
+                timeProvider = simulator,
+                latency = 2[second],
+                offlineDetectionTime = 1[second])
+        var sender = NodeMock("sender", senderLog)
+        var receiver = NodeMock("receiver", receiverLog)
         var message = createMessage()
     }
 
@@ -44,29 +49,56 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
     }
 
     @Test
-    fun send_triggersTransmissionOnChannels() =
+    fun `transmit triggers transmission on channels`() =
             sut.run {
                 network.transmit(Transmission(sender, receiver, message))
-                expect(
-                        log.entries is_ Equal to_ listOf(
-                                "00:00:00: sender_upload: Transmit $message " +
-                                        "from sender_upload " +
-                                        "to receiver_download",
-                                "00:00:00: receiver_download: Transmit $message " +
-                                        "from sender_upload " +
-                                        "to receiver_download"))
+                expect(senderLog.entries is_ Equal to_ listOf(
+                        "00:00:00: sender_upload: Transmit $message from " +
+                                "sender_upload to receiver_download"))
+                expect(receiverLog.entries is_ Equal to_ listOf(
+                        "00:00:00: receiver_download: Transmit $message from " +
+                                "sender_upload to receiver_download"))
             }
 
     @Test
-    fun send_schedulesReceiveCall() =
+    fun `transmit schedules receive call`() =
             sut.run {
                 sender.uploadStream.receiveTime = LocalDateTime.of(0, 1, 1, 0, 3)
                 network.transmit(Transmission(sender, receiver, message))
-                log.entries.clear()
+                receiverLog.entries.clear()
                 simulator.run()
-                expect(
-                        log.entries is_ Equal to_ listOf(
-                                "00:03:02: Receive $message " +
-                                        "from sender to receiver"))
+                expect(receiverLog.entries is_ Equal to_ listOf(
+                        "00:03:02: Receive $message from sender to receiver"))
+            }
+
+    @Test
+    fun `transmit notifies about successful transmission`() =
+            sut.run {
+                sender.uploadStream.receiveTime = LocalDateTime.of(0, 1, 1, 0, 3)
+                network.transmit(Transmission(sender, receiver, message))
+                senderLog.entries.clear()
+                simulator.run()
+                expect(senderLog.entries is_ Equal to_ listOf(
+                        "00:03:02: Successfully sent from sender to receiver"))
+            }
+
+    @Test
+    fun `send notifies about failed transmission because receiver is offline`() =
+            sut.run {
+                receiver.isOnline = false
+                network.transmit(Transmission(sender, receiver, message))
+                senderLog.entries.clear()
+                simulator.run()
+                expect(senderLog.entries is_ Equal to_ listOf(
+                        "00:00:01: Failure sending from sender to receiver"))
+            }
+
+    @Test
+    fun `send notifies about failed transmission because sender is offline`() =
+            sut.run {
+                sender.isOnline = false
+                network.transmit(Transmission(sender, receiver, message))
+                expect(senderLog.entries is_ Equal to_ listOf(
+                        "00:00:00: Failure sending from sender to receiver"))
             }
 }
