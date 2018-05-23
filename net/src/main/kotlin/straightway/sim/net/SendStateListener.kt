@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package straightway.sim.net
 
 /**
- * A node within a simulated network.
+ * Listener for the final state of a sent message.
  */
-interface Node : ReceiveListener, SendStateListener {
-    val isOnline: Boolean
-    val uploadStream: TransmissionStream
-    val downloadStream: TransmissionStream
+interface SendStateListener {
+    fun notifySuccess(receiver: Node) {}
+    fun notifyFailure(receiver: Node) {}
 }

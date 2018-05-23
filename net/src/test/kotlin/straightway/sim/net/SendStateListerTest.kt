@@ -13,14 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package straightway.sim.net
 
-/**
- * Listener for results of a data transmission.
- */
-interface TransmissionResultListener {
-    fun notifyReceive(sender: Node, message: Message)
-    fun notifySuccess(receiver: Node)
-    fun notifyFailure(receiver: Node)
+import com.nhaarman.mockito_kotlin.mock
+import org.junit.jupiter.api.Test
+
+class SendStateListerTest {
+
+    private class DefaultImplementation : SendStateListener
+
+    @Test
+    fun `notifySuccess does nothing by default`() =
+            DefaultImplementation().notifySuccess(mock())
+
+    @Test
+    fun `notifyFailure does nothing by default`() =
+            DefaultImplementation().notifyFailure(mock())
 }

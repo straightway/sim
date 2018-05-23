@@ -72,26 +72,26 @@ class AsyncSequentialTransmissionStreamTest :
 
     @Test
     fun `is initially online`() = sut.run {
-        expect(channel(10[bit/second]).isOnline is_ True)
+        expect(channel(10[bit / second]).isOnline is_ True)
     }
 
     @Test
     fun `requesting a transmission on an offline stream panics`() = sut.run {
-        val testChannel = channel(10[bit/second])
+        val testChannel = channel(10[bit / second])
         testChannel.isOnline = false
-        val request = TransmitRequest(message(), channel(12[bit/second]))
+        val request = TransmitRequest(message(), channel(12[bit / second]))
         expect({ testChannel.requestTransmission(request) } does Throw.type<Panic>())
     }
 
     @Test
     fun `accepting a transmission on an offline stream panics`() = sut.run {
-        val testChannel = channel(10[bit/second])
+        val testChannel = channel(10[bit / second])
         testChannel.isOnline = false
         expect({ testChannel.accept(
                 TransmitOffer(
-                    issuer = channel(12[bit/second]),
+                    issuer = channel(12[bit / second]),
                     finishTime = LocalDateTime.of(2000, 1, 1, 0, 0),
-                    request = TransmitRequest(message(), channel(12[bit/second]))))
+                    request = TransmitRequest(message(), channel(12[bit / second]))))
                } does Throw.type<Panic>())
     }
 
