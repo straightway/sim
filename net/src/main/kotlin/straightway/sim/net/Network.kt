@@ -44,7 +44,7 @@ class Network(
 
     private fun Transmission.scheduleTransmission() {
         val transmissionFinishedTime = scheduleTransmission(request)
-        val transmissionDuration = transmissionFinishedTime - timeProvider.currentTime
+        val transmissionDuration = transmissionFinishedTime - timeProvider.now
         schedule(transmissionDuration + latency) { notifySuccess() }
     }
 

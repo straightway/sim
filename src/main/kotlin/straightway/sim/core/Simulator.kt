@@ -29,13 +29,13 @@ import java.time.LocalDateTime
  */
 class Simulator : TimeProvider, Controller, Scheduler {
 
-    override var currentTime: LocalDateTime = LocalDateTime.of(0, 1, 1, 0, 0)
+    override var now: LocalDateTime = LocalDateTime.of(0, 1, 1, 0, 0)
         private set
 
     val eventQueue: List<Event> get() = _eventQueue
 
     override fun schedule(duration: UnitValue<*, Time>, action: () -> Unit) {
-        val newEvent = Event(currentTime + duration, action)
+        val newEvent = Event(now + duration, action)
         val insertPos = findInsertPosFor(newEvent)
         _eventQueue.add(insertPos, newEvent)
     }
@@ -68,7 +68,7 @@ class Simulator : TimeProvider, Controller, Scheduler {
     }
 
     private fun execute(event: Event) {
-        currentTime = event.time
+        now = event.time
         event.action()
     }
 

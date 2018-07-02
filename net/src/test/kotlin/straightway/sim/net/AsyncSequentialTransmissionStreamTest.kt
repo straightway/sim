@@ -59,7 +59,7 @@ class AsyncSequentialTransmissionStreamTest :
         var currentTime: LocalDateTime = LocalDateTime.of(0, 1, 1, 0, 0)
 
         private val timeProvider = mock<TimeProvider> {
-            on { currentTime } doAnswer { currentTime }
+            on { now } doAnswer { currentTime }
         }
         private val channels =
                 mutableMapOf<UnitValue<Int, Bandwidth>, AsyncSequentialTransmissionStream>()

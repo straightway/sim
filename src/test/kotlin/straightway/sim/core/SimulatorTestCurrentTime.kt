@@ -20,5 +20,5 @@ import org.junit.jupiter.api.Test
 
 internal class SimulatorTestCurrentTime : SimulatorTest() {
     @Test
-    fun isInitiallyZero() = assertEquals(initialTime, sut.currentTime)
+    fun isInitiallyZero() = assertEquals(initialTime, sut.now)
 }

@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 class TimeLog(private val timeProvider: TimeProvider) : LogList {
     val entries = mutableListOf<String>()
     override fun add(logEntry: String) {
-        entries.add("${timeProvider.currentTime.format(dateFormat)}: $logEntry")
+        entries.add("${timeProvider.now.format(dateFormat)}: $logEntry")
     }
 
     private companion object {

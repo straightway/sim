@@ -50,7 +50,7 @@ class AsyncSequentialTransmissionStream(
 
     private fun discardExpiredTransmissions() {
         _scheduledTransmissions = _scheduledTransmissions.dropWhile {
-            it.endTime < timeProvider.currentTime
+            it.endTime < timeProvider.now
         }
     }
 
@@ -86,7 +86,7 @@ class AsyncSequentialTransmissionStream(
     private val TransmitRequest.scheduledTransmissionsWithNewRequest
         get() = TransmissionScheduler(
                 _scheduledTransmissions,
-                timeProvider.currentTime,
+                timeProvider.now,
                 duration).transmissions
 
     private val TransmitRequest.duration get() = (message.size / bandwidth)[second]

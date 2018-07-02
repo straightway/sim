@@ -37,7 +37,7 @@ internal class SimulatorTestSchedule : SimulatorTest() {
     @Test
     fun schedulesEventAtProperTime() {
         sut.schedule(defaultEventDuration, Companion::doNotCall)
-        val targetTime = sut.currentTime + defaultEventDuration
+        val targetTime = sut.now + defaultEventDuration
         assertEquals(targetTime, sut.eventQueue.first().time)
     }
 

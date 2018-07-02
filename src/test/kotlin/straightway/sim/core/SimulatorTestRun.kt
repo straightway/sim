@@ -36,7 +36,7 @@ internal class SimulatorTestRun : SimulatorTest() {
     @Test
     fun executesEventAtProperTime() {
         sut.schedule(defaultEventDuration) {
-            Assertions.assertEquals(initialTime + defaultEventDuration, sut.currentTime)
+            Assertions.assertEquals(initialTime + defaultEventDuration, sut.now)
         }
         sut.run()
     }
