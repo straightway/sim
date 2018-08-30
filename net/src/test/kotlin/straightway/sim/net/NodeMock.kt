@@ -15,7 +15,7 @@
  */
 package straightway.sim.net
 
-class NodeMock(private val id: String, private val log: LogList) : Node {
+class NodeMock(override val id: String, private val log: LogList) : Node {
     override var isOnline = true
     override val uploadStream = TransmissionStreamMock(id + "_upload", log)
     override val downloadStream = TransmissionStreamMock(id + "_download", log)

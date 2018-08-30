@@ -19,6 +19,7 @@ package straightway.sim.net
  * A node within a simulated network.
  */
 interface Node : ReceiveListener, SendStateListener {
+    val id: Any
     val isOnline: Boolean
     val uploadStream: TransmissionStream
     val downloadStream: TransmissionStream
