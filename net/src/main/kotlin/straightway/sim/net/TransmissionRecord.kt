@@ -33,8 +33,8 @@ data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNu
     val endTime: LocalDateTime by lazy { startTime + duration }
     override fun equals(other: Any?) =
             if (other is TransmissionRecord)
-                abs(startTime - other.startTime) < EQUALITY_THRESHOLD &&
-                        abs(duration - other.duration) < EQUALITY_THRESHOLD
+                abs(startTime - other.startTime) < equalityThreshold &&
+                        abs(duration - other.duration) < equalityThreshold
             else super.equals(other)
 
     override fun hashCode() = (startTime.nano / EQUALITY_THRESHOLD_NS).hashCode() xor
@@ -43,7 +43,7 @@ data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNu
 
     companion object {
         private const val EQUALITY_THRESHOLD_NS = 10
-        private val EQUALITY_THRESHOLD = EQUALITY_THRESHOLD_NS[nano(second)]
+        private val equalityThreshold = EQUALITY_THRESHOLD_NS[nano(second)]
     }
 }
 
