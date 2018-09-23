@@ -17,7 +17,7 @@ package straightway.sim.net
 
 import straightway.error.Panic
 import straightway.units.Bandwidth
-import straightway.units.UnitValue
+import straightway.units.UnitNumber
 import straightway.units.div
 import straightway.units.get
 import straightway.units.plus
@@ -29,7 +29,7 @@ import straightway.utils.TimeProvider
  * its notifyReceive date is determined by the slowest of both channels. It never changes.
  */
 class AsyncSequentialTransmissionStream(
-        private val bandwidth: UnitValue<Int, Bandwidth>,
+        private val bandwidth: UnitNumber<Bandwidth>,
         private val timeProvider: TimeProvider
 ) : TransmissionStream {
 
