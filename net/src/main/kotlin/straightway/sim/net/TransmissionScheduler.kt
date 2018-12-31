@@ -17,7 +17,7 @@
 package straightway.sim.net
 
 import straightway.units.Time
-import straightway.units.UnitNumber
+import straightway.units.UnitValue
 import straightway.units.abs
 import straightway.units.get
 import straightway.units.minus
@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 internal data class TransmissionScheduler(
         private val scheduledTransmissions: List<TransmissionRecord>,
         private val startTime: LocalDateTime,
-        private val duration: UnitNumber<Time>
+        private val duration: UnitValue<Time>
 ) {
 
     val transmissions: List<TransmissionRecord>

@@ -21,5 +21,5 @@ import straightway.units.byte
 import straightway.units.get
 import java.util.UUID
 
-fun createMessage(size: UnitValue<Int, AmountOfData> = 100[byte]) =
+fun createMessage(size: UnitValue<AmountOfData> = 100[byte]) =
         Message("Message(ID=${UUID.randomUUID()}", size)

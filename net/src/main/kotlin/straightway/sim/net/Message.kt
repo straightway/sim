@@ -21,4 +21,4 @@ import straightway.units.UnitValue
 /**
  * A simulated network message with an explicitly specified size.
  */
-data class Message(val content: Any, val size: UnitValue<Int, AmountOfData>)
+data class Message(val content: Any, val size: UnitValue<AmountOfData>)

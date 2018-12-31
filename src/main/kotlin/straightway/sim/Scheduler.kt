@@ -22,5 +22,5 @@ import straightway.units.UnitValue
  * Schedule an action after a given duration.
  */
 interface Scheduler {
-    fun schedule(duration: UnitValue<*, Time>, action: () -> Unit)
+    fun schedule(duration: UnitValue<Time>, action: () -> Unit)
 }

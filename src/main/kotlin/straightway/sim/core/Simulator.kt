@@ -34,7 +34,7 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     val eventQueue: List<Event> get() = _eventQueue
 
-    override fun schedule(duration: UnitValue<*, Time>, action: () -> Unit) {
+    override fun schedule(duration: UnitValue<Time>, action: () -> Unit) {
         val newEvent = Event(now + duration, action)
         val insertPos = findInsertPosFor(newEvent)
         _eventQueue.add(insertPos, newEvent)

@@ -34,7 +34,6 @@ import straightway.testing.flow.to_
 import straightway.units.AmountOfData
 import straightway.units.Bandwidth
 import straightway.units.Time
-import straightway.units.UnitNumber
 import straightway.units.UnitValue
 import straightway.units.bit
 import straightway.units.byte
@@ -51,7 +50,7 @@ class AsyncSequentialTransmissionStreamTest :
 
     class Environment {
 
-        fun channel(bandwidth: UnitValue<Int, Bandwidth>) =
+        fun channel(bandwidth: UnitValue<Bandwidth>) =
                 channels.getOrPut(bandwidth) {
                     AsyncSequentialTransmissionStream(bandwidth, timeProvider)
                 }
@@ -62,7 +61,7 @@ class AsyncSequentialTransmissionStreamTest :
             on { now } doAnswer { currentTime }
         }
         private val channels =
-                mutableMapOf<UnitValue<Int, Bandwidth>, AsyncSequentialTransmissionStream>()
+                mutableMapOf<UnitValue<Bandwidth>, AsyncSequentialTransmissionStream>()
     }
 
     @BeforeEach
@@ -280,12 +279,12 @@ class AsyncSequentialTransmissionStreamTest :
                         transmissionBlock(100[second], 10[second])))
     }
 
-    private fun transmissionBlock(startTime: UnitNumber<Time>, duration: UnitNumber<Time>) =
+    private fun transmissionBlock(startTime: UnitValue<Time>, duration: UnitValue<Time>) =
             TransmissionRecord(
                     LocalDateTime.of(0, 1, 1, 0, 0) + startTime,
                     duration)
 
     private companion object {
-        fun message(size: UnitValue<Int, AmountOfData> = 100[byte]) = createMessage(size)
+        fun message(size: UnitValue<AmountOfData> = 100[byte]) = createMessage(size)
     }
 }

@@ -17,7 +17,7 @@
 package straightway.sim.net
 
 import straightway.units.Time
-import straightway.units.UnitNumber
+import straightway.units.UnitValue
 import straightway.units.abs
 import straightway.units.get
 import straightway.units.minus
@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 /**
  * A transmission with a start time and a duration.
  */
-data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitNumber<Time>) {
+data class TransmissionRecord(val startTime: LocalDateTime, val duration: UnitValue<Time>) {
     val endTime: LocalDateTime by lazy { startTime + duration }
     override fun equals(other: Any?) =
             if (other is TransmissionRecord)
