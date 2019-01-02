@@ -52,7 +52,7 @@ internal class SimulatorTestRun : SimulatorTest() {
     fun executesAllEvents() {
         val callSequence = CallSequence(0, 2, 1)
         for (i in 0..2) {
-            val execTime = callSequence.expectedActionOrder[i][minute]
+            val execTime = callSequence.expectedActionOrder[i].toDouble()[minute]
             val action = callSequence.actions[i]
             sut.schedule(execTime) { action() }
         }

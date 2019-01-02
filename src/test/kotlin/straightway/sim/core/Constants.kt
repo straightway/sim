@@ -20,4 +20,4 @@ import straightway.units.minute
 import java.time.LocalDateTime
 
 internal val initialTime = LocalDateTime.of(0, 1, 1, 0, 0)
-internal val defaultEventDuration = 1[minute]
+internal val defaultEventDuration = 1.0[minute]

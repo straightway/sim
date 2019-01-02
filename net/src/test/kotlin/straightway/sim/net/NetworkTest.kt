@@ -36,8 +36,8 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
         val network = Network(
                 simScheduler = simulator,
                 timeProvider = simulator,
-                latency = 2[second],
-                offlineDetectionTime = 1[second])
+                latency = 2.0[second],
+                offlineDetectionTime = 1.0[second])
         var sender = NodeMock("sender", senderLog)
         var receiver = NodeMock("receiver", receiverLog)
         var message = createMessage()

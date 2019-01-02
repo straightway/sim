@@ -16,11 +16,11 @@
 package straightway.sim
 
 import straightway.units.Time
-import straightway.units.UnitValue
+import straightway.units.UnitDouble
 
 /**
  * Schedule an action after a given duration.
  */
 interface Scheduler {
-    fun schedule(duration: UnitValue<Time>, action: () -> Unit)
+    fun schedule(duration: UnitDouble<Time>, action: () -> Unit)
 }

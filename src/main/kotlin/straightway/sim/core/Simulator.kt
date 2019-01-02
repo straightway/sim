@@ -20,7 +20,7 @@ import straightway.sim.Event
 import straightway.sim.Scheduler
 import straightway.utils.TimeProvider
 import straightway.units.Time
-import straightway.units.UnitValue
+import straightway.units.UnitDouble
 import straightway.units.plus
 import java.time.LocalDateTime
 
@@ -34,7 +34,7 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     val eventQueue: List<Event> get() = _eventQueue
 
-    override fun schedule(duration: UnitValue<Time>, action: () -> Unit) {
+    override fun schedule(duration: UnitDouble<Time>, action: () -> Unit) {
         val newEvent = Event(now + duration, action)
         val insertPos = findInsertPosFor(newEvent)
         _eventQueue.add(insertPos, newEvent)

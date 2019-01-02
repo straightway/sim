@@ -17,7 +17,7 @@ package straightway.sim.net
 
 import straightway.sim.Scheduler
 import straightway.units.Time
-import straightway.units.UnitValue
+import straightway.units.UnitDouble
 import straightway.units.minus
 import straightway.units.plus
 import straightway.utils.TimeProvider
@@ -28,8 +28,8 @@ import straightway.utils.TimeProvider
 class Network(
         private val simScheduler: Scheduler,
         private val timeProvider: TimeProvider,
-        val latency: UnitValue<Time>,
-        val offlineDetectionTime: UnitValue<Time>
+        val latency: UnitDouble<Time>,
+        val offlineDetectionTime: UnitDouble<Time>
 ) : TransmissionRequestHandler {
 
     override fun transmit(transmission: Transmission) {
@@ -48,7 +48,7 @@ class Network(
         schedule(transmissionDuration + latency) { notifySuccess() }
     }
 
-    private fun schedule(time: UnitValue<Time>, action: () -> Unit) =
+    private fun schedule(time: UnitDouble<Time>, action: () -> Unit) =
             simScheduler.schedule(time, action)
 
     private fun Transmission.notifySuccess() {
