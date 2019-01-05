@@ -101,4 +101,12 @@ class NetworkTest : TestBase<NetworkTest.Environment>() {
                 expect(senderLog.entries is_ Equal to_ listOf(
                         "00:00:00: Failure sending from sender to receiver"))
             }
+
+    @Test
+    fun `transmission end is scheduled with description`() =
+            sut.run {
+                network.transmit(Transmission(sender, receiver, message))
+                val expectedDescription = "transmission finished: ${sender.id} -> ${receiver.id}"
+                expect(simulator.eventQueue.single().description is_ Equal to_ expectedDescription)
+            }
 }

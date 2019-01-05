@@ -20,23 +20,27 @@ import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import straightway.testing.CallCounter
 import straightway.testing.CallSequence
+import straightway.testing.flow.Equal
+import straightway.testing.flow.expect
+import straightway.testing.flow.is_
+import straightway.testing.flow.to_
 import straightway.units.plus
 
 internal class SimulatorTestSchedule : SimulatorTest() {
 
     @Test
     fun doesNotCallActionImmediately() =
-            sut.schedule(defaultEventDuration, Companion::doNotCall)
+            sut.schedule(defaultEventDuration, DESCRIPTION, Companion::doNotCall)
 
     @Test
     fun addsEventToEventQueue() {
-        sut.schedule(defaultEventDuration, Companion::doNotCall)
+        sut.schedule(defaultEventDuration, DESCRIPTION, Companion::doNotCall)
         assertEquals(1, sut.eventQueue.size)
     }
 
     @Test
     fun schedulesEventAtProperTime() {
-        sut.schedule(defaultEventDuration, Companion::doNotCall)
+        sut.schedule(defaultEventDuration, DESCRIPTION, Companion::doNotCall)
         val targetTime = sut.now + defaultEventDuration
         assertEquals(targetTime, sut.eventQueue.first().time)
     }
@@ -44,7 +48,7 @@ internal class SimulatorTestSchedule : SimulatorTest() {
     @Test
     fun addsEventWithSpecifiedAction() {
         val callCounter = CallCounter()
-        sut.schedule(defaultEventDuration) { callCounter.action() }
+        sut.schedule(defaultEventDuration, DESCRIPTION) { callCounter.action() }
         sut.eventQueue.first().action()
         assertEquals(1, callCounter.calls)
     }
@@ -52,15 +56,22 @@ internal class SimulatorTestSchedule : SimulatorTest() {
     @Test
     fun allowsSchedulingNewEventWhileExecutingAction() {
         val callSequence = CallSequence(0, 1)
-        sut.schedule(defaultEventDuration) {
+        sut.schedule(defaultEventDuration, DESCRIPTION) {
             callSequence.actions[0]()
-            sut.schedule(defaultEventDuration) { callSequence.actions[1]() }
+            sut.schedule(defaultEventDuration, DESCRIPTION) { callSequence.actions[1]() }
         }
         sut.run()
         callSequence.assertCompleted()
     }
 
+    @Test
+    fun `description is added to event`() {
+        sut.schedule(defaultEventDuration, DESCRIPTION, Companion::doNotCall)
+        expect(sut.eventQueue.single().description is_ Equal to_ DESCRIPTION)
+    }
+
     private companion object {
+        const val DESCRIPTION = "Description"
         fun doNotCall() = fail<Unit>("must not be called")!!
     }
 }

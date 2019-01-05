@@ -22,5 +22,6 @@ import straightway.units.UnitDouble
  * Schedule an action after a given duration.
  */
 interface Scheduler {
-    fun schedule(duration: UnitDouble<Time>, action: () -> Unit)
+    @Suppress("LongParameterList")
+    fun schedule(relativeStartTime: UnitDouble<Time>, description: String, action: () -> Unit)
 }

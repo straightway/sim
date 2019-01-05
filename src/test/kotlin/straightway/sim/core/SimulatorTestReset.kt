@@ -28,7 +28,7 @@ class SimulatorTestReset : SimulatorTest() {
 
     @Test
     fun clearEventQueue() {
-        sut.schedule(defaultEventDuration) {}
+        sut.schedule(defaultEventDuration, "") {}
         sut.reset()
         expect(sut.eventQueue is_ Empty)
     }

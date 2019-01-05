@@ -23,6 +23,7 @@ import straightway.units.Time
 import straightway.units.UnitDouble
 import straightway.units.plus
 import java.time.LocalDateTime
+import java.util.TreeSet
 
 /**
  * Run an event driven simulation by executing actions at given simulated time points.
@@ -32,47 +33,37 @@ class Simulator : TimeProvider, Controller, Scheduler {
     override var now: LocalDateTime = LocalDateTime.of(0, 1, 1, 0, 0)
         private set
 
-    val eventQueue: List<Event> get() = _eventQueue
+    val eventQueue: List<Event> get() = _eventQueue.toList()
 
-    override fun schedule(duration: UnitDouble<Time>, action: () -> Unit) {
-        val newEvent = Event(now + duration, action)
-        val insertPos = findInsertPosFor(newEvent)
-        _eventQueue.add(insertPos, newEvent)
+    override fun schedule(
+            relativeStartTime: UnitDouble<Time>, description: String, action: () -> Unit
+    ) {
+        val newEvent = Event(now + relativeStartTime, description, action)
+        _eventQueue.add(newEvent)
     }
 
     override fun run() {
         isRunning = true
-        while (isRunning && _eventQueue.any())
-            execute(popNextEvent())
+        while (isRunning && !_eventQueue.isEmpty()) {
+            val nextEvent = popNextEvent()
+            execute(nextEvent)
+        }
     }
 
-    override fun pause() {
-        isRunning = false
-    }
+    override fun pause() { isRunning = false }
 
-    override fun reset() =
-            _eventQueue.clear()
+    override fun reset() = _eventQueue.clear()
 
     // <editor-fold desc="Private">
 
-    private fun findInsertPosFor(newEvent: Event) =
-            getIndexOfFirstEventAfter(newEvent).let { if (it < 0) _eventQueue.size else it }
-
-    private fun getIndexOfFirstEventAfter(newEvent: Event) =
-            _eventQueue.indexOfFirst { newEvent.time < it.time }
-
-    private fun popNextEvent(): Event {
-        val nextEvent = _eventQueue.first()
-        _eventQueue.removeAt(0)
-        return nextEvent
-    }
+    private fun popNextEvent() = _eventQueue.first().apply { _eventQueue.remove(this) }
 
     private fun execute(event: Event) {
         now = event.time
         event.action()
     }
 
-    private val _eventQueue: MutableList<Event> = mutableListOf()
+    private val _eventQueue: TreeSet<Event> = TreeSet()
     private var isRunning = false
 
     // </editor-fold>

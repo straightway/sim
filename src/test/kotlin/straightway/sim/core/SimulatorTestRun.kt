@@ -28,14 +28,14 @@ internal class SimulatorTestRun : SimulatorTest() {
     @Test
     fun executesEvent() {
         val callCounter = CallCounter()
-        sut.schedule(defaultEventDuration) { callCounter.action() }
+        sut.schedule(defaultEventDuration, "") { callCounter.action() }
         sut.run()
         Assertions.assertEquals(1, callCounter.calls)
     }
 
     @Test
     fun executesEventAtProperTime() {
-        sut.schedule(defaultEventDuration) {
+        sut.schedule(defaultEventDuration, "") {
             Assertions.assertEquals(initialTime + defaultEventDuration, sut.now)
         }
         sut.run()
@@ -43,7 +43,7 @@ internal class SimulatorTestRun : SimulatorTest() {
 
     @Test
     fun consumesEvent() {
-        sut.schedule(defaultEventDuration) {}
+        sut.schedule(defaultEventDuration, "") {}
         sut.run()
         Assertions.assertEquals(0, sut.eventQueue.size)
     }
@@ -54,7 +54,7 @@ internal class SimulatorTestRun : SimulatorTest() {
         for (i in 0..2) {
             val execTime = callSequence.expectedActionOrder[i].toDouble()[minute]
             val action = callSequence.actions[i]
-            sut.schedule(execTime) { action() }
+            sut.schedule(execTime, "") { action() }
         }
         sut.run()
         callSequence.assertCompleted()

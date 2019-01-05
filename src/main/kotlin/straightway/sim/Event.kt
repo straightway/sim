@@ -20,4 +20,11 @@ import java.time.LocalDateTime
 /**
  * A simulation event.
  */
-data class Event(val time: LocalDateTime, val action: () -> Unit)
+data class Event(
+        val time: LocalDateTime,
+        val description: String,
+        val action: () -> Unit
+) : Comparable<Event> {
+    override fun compareTo(other: Event) = time.compareTo(other.time)
+    override fun toString() = "$time: $description"
+}

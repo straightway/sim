@@ -19,7 +19,6 @@ import straightway.sim.Scheduler
 import straightway.units.Time
 import straightway.units.UnitDouble
 import straightway.units.minus
-import straightway.units.plus
 import straightway.utils.TimeProvider
 
 /**
@@ -48,8 +47,9 @@ class Network(
         schedule(transmissionDuration + latency) { notifySuccess() }
     }
 
-    private fun schedule(time: UnitDouble<Time>, action: () -> Unit) =
-            simScheduler.schedule(time, action)
+    private fun Transmission.schedule(time: UnitDouble<Time>, action: () -> Unit) =
+            simScheduler.schedule(
+                    time, "transmission finished: ${sender.id} -> ${receiver.id}", action)
 
     private fun Transmission.notifySuccess() {
         receiver.notifyReceive(sender, message)

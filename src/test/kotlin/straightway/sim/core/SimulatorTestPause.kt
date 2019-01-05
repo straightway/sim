@@ -39,8 +39,8 @@ class SimulatorTestPause : SimulatorTest() {
 
     @Test
     fun calledWhileRunning_stopsSimulation() {
-        sut.schedule(1.0[minute]) { sut.pause() }
-        sut.schedule(2.0[minute]) { fail("This event must not be called") }
+        sut.schedule(1.0[minute], "") { sut.pause() }
+        sut.schedule(2.0[minute], "") { fail("This event must not be called") }
         expect({ sut.run() } does Not - Throw.exception)
         expect(sut.eventQueue has Size of 1)
     }
@@ -48,8 +48,8 @@ class SimulatorTestPause : SimulatorTest() {
     @Test
     fun callingRunAfterPause_resumesSimulation() {
         val numCalls = mutableListOf(0, 0)
-        sut.schedule(1.0[minute]) { ++numCalls[0]; sut.pause() }
-        sut.schedule(2.0[minute]) { ++numCalls[1] }
+        sut.schedule(1.0[minute], "") { ++numCalls[0]; sut.pause() }
+        sut.schedule(2.0[minute], "") { ++numCalls[1] }
         expect(numCalls is_ Equal to_ listOf(0, 0))
         sut.run()
         expect(numCalls is_ Equal to_ listOf(1, 0))
