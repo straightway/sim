@@ -22,9 +22,13 @@ import java.time.LocalDateTime
  */
 data class Event(
         val time: LocalDateTime,
+        val sequenceNumber: Int,
         val description: String,
         val action: () -> Unit
 ) : Comparable<Event> {
-    override fun compareTo(other: Event) = time.compareTo(other.time)
+    override fun compareTo(other: Event) = when (val result = time.compareTo(other.time)) {
+        0 -> sequenceNumber.compareTo(other.sequenceNumber)
+        else -> result
+    }
     override fun toString() = "$time: $description"
 }

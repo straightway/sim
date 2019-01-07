@@ -70,6 +70,20 @@ internal class SimulatorTestSchedule : SimulatorTest() {
         expect(sut.eventQueue.single().description is_ Equal to_ DESCRIPTION)
     }
 
+    @Test
+    fun `two events at the same time are both included`() {
+        sut.schedule(defaultEventDuration, "Event0") {}
+        sut.schedule(defaultEventDuration, "Event1") {}
+        expect(sut.eventQueue.size is_ Equal to_ 2)
+    }
+
+    @Test
+    fun `int overflow does not cause exception`() {
+        var x = Int.MAX_VALUE
+        x++
+        expect(x is_ Equal to_ Int.MIN_VALUE)
+    }
+
     private companion object {
         const val DESCRIPTION = "Description"
         fun doNotCall() = fail<Unit>("must not be called")!!

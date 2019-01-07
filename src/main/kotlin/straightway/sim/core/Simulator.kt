@@ -38,7 +38,7 @@ class Simulator : TimeProvider, Controller, Scheduler {
     override fun schedule(
             relativeStartTime: UnitDouble<Time>, description: String, action: () -> Unit
     ) {
-        val newEvent = Event(now + relativeStartTime, description, action)
+        val newEvent = Event(now + relativeStartTime, eventSequenceNumber++, description, action)
         _eventQueue.add(newEvent)
     }
 
@@ -65,6 +65,7 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     private val _eventQueue: TreeSet<Event> = TreeSet()
     private var isRunning = false
+    private var eventSequenceNumber = Int.MIN_VALUE
 
     // </editor-fold>
 }
