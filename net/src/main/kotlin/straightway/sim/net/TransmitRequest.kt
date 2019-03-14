@@ -33,14 +33,14 @@ class TransmitRequest(val message: Message, val sender: TransmissionStream) {
 
 infix fun Message.from(sender: TransmissionStream) = TransmitRequest(this, sender)
 fun scheduleTransmission(request: TransmitRequest) = request.run {
+    val offer = negociateTransmitOffer(request)
+    sender.accept(offer)
+    receiver.accept(offer)
+    offer.finishTime
+}
+
+private fun TransmitRequest.negociateTransmitOffer(request: TransmitRequest): TransmitOffer {
     val sendOffer = sender.requestTransmission(request)
     val receiveOffer = receiver.requestTransmission(request)
-    val slowerOffer =
-            if (sendOffer.finishTime < receiveOffer.finishTime) receiveOffer
-            else sendOffer
-
-    sender.accept(slowerOffer)
-    receiver.accept(slowerOffer)
-
-    slowerOffer.finishTime
+    return if (sendOffer.finishTime < receiveOffer.finishTime) receiveOffer else sendOffer
 }

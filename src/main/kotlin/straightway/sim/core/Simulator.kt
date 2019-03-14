@@ -44,10 +44,8 @@ class Simulator : TimeProvider, Controller, Scheduler {
 
     override fun run() {
         isRunning = true
-        while (isRunning && !_eventQueue.isEmpty()) {
-            val nextEvent = popNextEvent()
-            execute(nextEvent)
-        }
+        while (canProcessEvents)
+            execute(popNextEvent())
     }
 
     override fun pause() { isRunning = false }
@@ -55,6 +53,9 @@ class Simulator : TimeProvider, Controller, Scheduler {
     override fun reset() = _eventQueue.clear()
 
     // <editor-fold desc="Private">
+
+    private val canProcessEvents
+        get() = isRunning && !_eventQueue.isEmpty()
 
     private fun popNextEvent() = _eventQueue.first().apply { _eventQueue.remove(this) }
 
