@@ -1,6 +1,8 @@
 # sim
 
-This kotlin library provides basic means for running simple event driven simulations.
+This kotlin library provides accurate simulation of computer networks,
+including multiple nodes, different bandwidth between the nodes and
+transmission latency. 
 
 ## Status
 
